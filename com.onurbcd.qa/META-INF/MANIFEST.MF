@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Qa
+Bundle-SymbolicName: com.onurbcd.qa;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.onurbcd.qa.Activator
+Bundle-Vendor: ONURBCD
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core;bundle-version="3.21.0",
+ org.eclipse.core.resources;bundle-version="3.13.700",
+ org.eclipse.jdt.ui;bundle-version="3.21.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: com.onurbcd.qa
+Bundle-ActivationPolicy: lazy
