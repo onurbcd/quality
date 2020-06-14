@@ -17,6 +17,7 @@ import com.onurbcd.qa.helper.PackageHelper;
 import com.onurbcd.qa.helper.ProjectHelper;
 import com.onurbcd.qa.helper.TypeHelper;
 import com.onurbcd.qa.helper.UnitHelper;
+import com.onurbcd.qa.util.QaMethod;
 
 public class AnalysisManager {
 	
@@ -69,7 +70,7 @@ public class AnalysisManager {
 
 	private IMethod method;
 
-	private Set<IMethod> callees;
+	private QaMethod qaMethod;
 
 	public AnalysisManager() {
 		project = null;
@@ -77,7 +78,7 @@ public class AnalysisManager {
 		compilationUnit = null;
 		type = null;
 		method = null;
-		callees = null;
+		qaMethod = null;
 	}
 
 	public void run() {
@@ -160,20 +161,18 @@ public class AnalysisManager {
 			return;
 		}
 
-		callees = MethodHelper.getCalleesOf(method, 1, MAIN_TYPE, NOT_QA_TYPES);
+		qaMethod = MethodHelper.getCalleesOf(method, 1, MAIN_TYPE, NOT_QA_TYPES);
 
-		if (callees == null || callees.isEmpty()) {
+		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
 			sb.append("\n").append("Method '").append(METHOD_NAME).append("' does not have callees.");
 		}
 	}
 
 	private void setMethodsNamesInMessage() {
-		if (callees == null || callees.isEmpty()) {
+		if (qaMethod == null) {
 			return;
 		}
 
-		for (IMethod calleMethod : callees) {
-			sb.append("\n").append(calleMethod.getElementName());
-		}
+		sb.append(qaMethod.toString());
 	}
 }

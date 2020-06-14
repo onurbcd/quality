@@ -14,6 +14,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.callhierarchy.CallHierarchy;
 import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
 
+import com.onurbcd.qa.util.QaMethod;
+
 /**
  * @see https://www.cct.lsu.edu/~rguidry/ecl31docs/api/org/eclipse/jdt/internal/core/SourceMethod.html#getSignature()
  *      https://www.cct.lsu.edu/~rguidry/ecl31docs/api/org/eclipse/jdt/core/Signature.html
@@ -50,29 +52,25 @@ public class MethodHelper {
 				.findFirst().orElse(null);
 	}
 
-	public static Set<IMethod> getCalleesOf(IMethod method, int level, String mainType, Set<String> notQaTypes) {
-		Set<IMethod> callees = new LinkedHashSet<>();
-		callees.add(method);
+	public static QaMethod getCalleesOf(IMethod method, int level, String mainType, Set<String> notQaTypes) {
+		QaMethod qaMethod = new QaMethod(level, method);
 		
 		if (level > MAX_LEVEL) {
-			return callees;
+			return qaMethod;
 		}
 
-		Set<IMethod> methods = getCalleesMethods(method, level, mainType, notQaTypes);
+		Set<IMethod> methods = getCalleesMethods(method, mainType, notQaTypes);
 		
 		if (methods.isEmpty()) {
-			return callees;
+			return qaMethod;
 		}
 		
 		for (IMethod calleeMethod : methods) {
-			Set<IMethod> calleeMethods = getCalleesOf(calleeMethod, level + 1, mainType, notQaTypes);
-			
-			if (!calleeMethods.isEmpty()) {
-				callees.addAll(calleeMethods);
-			}
+			QaMethod calleeQaMethod = getCalleesOf(calleeMethod, level + 1, mainType, notQaTypes);
+			qaMethod.addtoCallees(calleeQaMethod);
 		}
 
-		return callees;
+		return qaMethod;
 	}
 
 	private static boolean safeEquals(IMethod method, String methodSignature) {
@@ -83,7 +81,7 @@ public class MethodHelper {
 		}
 	}
 
-	private static Set<IMethod> getCalleesMethods(IMethod method, int level, String mainType, Set<String> notQaTypes) {
+	private static Set<IMethod> getCalleesMethods(IMethod method, String mainType, Set<String> notQaTypes) {
 		CallHierarchy callHierarchy = CallHierarchy.getDefault();
 		IMember[] members = {method};
 		MethodWrapper[] methodWrappers = callHierarchy.getCalleeRoots(members);

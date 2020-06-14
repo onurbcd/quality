@@ -47,4 +47,21 @@ public class QaMethod {
 	public void addtoCallees(QaMethod qaMethod) {
 		callees.add(qaMethod);
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder
+		.append("\n")
+		.append(StringUtil.fill(level * 4, " "))
+		.append(level)
+		.append(" - ")
+		.append(method.getElementName());
+		
+		for (QaMethod qaMethod : callees) {
+			builder.append(qaMethod.toString());
+		}
+		
+		return builder.toString();
+	}
 }
