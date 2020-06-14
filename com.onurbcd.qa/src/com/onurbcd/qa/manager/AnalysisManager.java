@@ -1,5 +1,9 @@
 package com.onurbcd.qa.manager;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -27,6 +31,31 @@ public class AnalysisManager {
 	private static final String METHOD_NAME = "executeMonitored";
 
 	private static final String METHOD_SIGNATURE = "(QJobExecutionContext;)V";
+
+	private static final String MAIN_TYPE = "br.com.engdb.geotec";
+	
+	private static final Set<String> NOT_QA_TYPES = new HashSet<>(Arrays.asList(
+			"br.com.engdb.geotec.async",
+			"br.com.engdb.geotec.config",
+			"br.com.engdb.geotec.domain",
+			"br.com.engdb.geotec.dto",
+			"br.com.engdb.geotec.enums",
+			"br.com.engdb.geotec.exception",
+			"br.com.engdb.geotec.interfaces",
+			"br.com.engdb.geotec.report.dto",
+			"br.com.engdb.geotec.ionic.v1.dto",
+			"br.com.engdb.geotec.repository",
+			"br.com.engdb.geotec.web.exception",
+			"br.com.engdb.geotec.web.rest.dto",
+			"br.com.engdb.geotec.web.rest.errors",
+			"br.com.engdb.geotec.web.rest.grg.dto",
+			"br.com.engdb.geotec.web.rest.mapper",
+			"br.com.engdb.geotec.web.rest.pims.dto",
+			"br.com.engdb.geotec.web.rest.vm",
+			"br.com.engdb.geotec.web.soap.grg.dto",
+			"br.com.engdb.geotec.web.soap.pims.entity"));
+
+	private static final String WAS_NOT_FOUND = "' was not found.";
 	
 	private StringBuilder sb;
 	
@@ -52,8 +81,7 @@ public class AnalysisManager {
 	}
 
 	public void run() {
-		// TODO Retirar os try catch dos handlers e colocar nos m�todos est�ticos que eles chamam
-		// TODO Adicionar um contador para verificar quanto tempo o run demora a executar
+		Instant start = Instant.now();
 		sb = new StringBuilder("");
 		handleProject();
 		handlePackage();
@@ -62,7 +90,9 @@ public class AnalysisManager {
 		handleMethod();
 		handleCalles();
 		setMethodsNamesInMessage();
-		sb.append("\n").append("So far, so good!");
+		Instant finish = Instant.now();
+		long timeElapsed = Duration.between(start, finish).getSeconds();
+		sb.append("\n\n").append("DURATION IN SECONDS: ").append(timeElapsed);
 	}
 	
 	public String getMessage() {
@@ -73,7 +103,7 @@ public class AnalysisManager {
 		project = ProjectHelper.getProject(PROJECT_NAME);
 		
 		if (project == null) {
-			sb.append("\n").append("Project '").append(PROJECT_NAME).append("' was not found.");
+			sb.append("\n").append("Project '").append(PROJECT_NAME).append(WAS_NOT_FOUND);
 		}
 	}
 
@@ -85,7 +115,7 @@ public class AnalysisManager {
 		packageFragment = PackageHelper.getPackage(project, PACKAGE_NAME);
 
 		if (packageFragment == null) {
-			sb.append("\n").append("Package '").append(PACKAGE_NAME).append("' was not found.");
+			sb.append("\n").append("Package '").append(PACKAGE_NAME).append(WAS_NOT_FOUND);
 		}
 	}
 
@@ -97,7 +127,7 @@ public class AnalysisManager {
 		compilationUnit = UnitHelper.getUnit(packageFragment, UNIT_NAME);
 
 		if (compilationUnit == null) {
-			sb.append("\n").append("Compilation unit '").append(UNIT_NAME).append("' was not found.");
+			sb.append("\n").append("Compilation unit '").append(UNIT_NAME).append(WAS_NOT_FOUND);
 		}
 	}
 
@@ -109,7 +139,7 @@ public class AnalysisManager {
 		type = TypeHelper.getType(compilationUnit, TYPE_NAME);
 
 		if (type == null) {
-			sb.append("\n").append("Type '").append(TYPE_NAME).append("' was not found.");
+			sb.append("\n").append("Type '").append(TYPE_NAME).append(WAS_NOT_FOUND);
 		}
 	}
 
@@ -121,7 +151,7 @@ public class AnalysisManager {
 		method = MethodHelper.getMethod(type, METHOD_NAME, METHOD_SIGNATURE);
 
 		if (method == null) {
-			sb.append("\n").append("Method '").append(METHOD_NAME).append("' with signature '").append(METHOD_SIGNATURE).append("' was not found.");
+			sb.append("\n").append("Method '").append(METHOD_NAME).append("' with signature '").append(METHOD_SIGNATURE).append(WAS_NOT_FOUND);
 		}
 	}
 
@@ -130,7 +160,7 @@ public class AnalysisManager {
 			return;
 		}
 
-		callees = MethodHelper.getCalleesOf(method, 1);
+		callees = MethodHelper.getCalleesOf(method, 1, MAIN_TYPE, NOT_QA_TYPES);
 
 		if (callees == null || callees.isEmpty()) {
 			sb.append("\n").append("Method '").append(METHOD_NAME).append("' does not have callees.");

@@ -17,32 +17,11 @@ import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
 /**
  * @see https://www.cct.lsu.edu/~rguidry/ecl31docs/api/org/eclipse/jdt/internal/core/SourceMethod.html#getSignature()
  *      https://www.cct.lsu.edu/~rguidry/ecl31docs/api/org/eclipse/jdt/core/Signature.html
- * @author Bruno Domingues
  */
 @SuppressWarnings("restriction")
 public class MethodHelper {
 
-	private static final Set<String> NOT_QA_TYPES = new HashSet<>(Arrays.asList(
-		"br.com.engdb.geotec.async",
-		"br.com.engdb.geotec.config",
-		"br.com.engdb.geotec.domain",
-		"br.com.engdb.geotec.dto",
-		"br.com.engdb.geotec.enums",
-		"br.com.engdb.geotec.exception",
-		"br.com.engdb.geotec.interfaces",
-		"br.com.engdb.geotec.report.dto",
-		"br.com.engdb.geotec.ionic.v1.dto",
-		"br.com.engdb.geotec.repository",
-		"br.com.engdb.geotec.web.exception",
-		"br.com.engdb.geotec.web.rest.dto",
-		"br.com.engdb.geotec.web.rest.errors",
-		"br.com.engdb.geotec.web.rest.grg.dto",
-		"br.com.engdb.geotec.web.rest.mapper",
-		"br.com.engdb.geotec.web.rest.pims.dto",
-		"br.com.engdb.geotec.web.rest.vm",
-		"br.com.engdb.geotec.web.soap.grg.dto",
-		"br.com.engdb.geotec.web.soap.pims.entity"
-	));
+	private static final int MAX_LEVEL = 3;
 
 	private MethodHelper() {
 	}
@@ -71,11 +50,11 @@ public class MethodHelper {
 				.findFirst().orElse(null);
 	}
 
-	public static Set<IMethod> getCalleesOf(IMethod method, int level) {
+	public static Set<IMethod> getCalleesOf(IMethod method, int level, String mainType, Set<String> notQaTypes) {
 		Set<IMethod> callees = new HashSet<>();
 		callees.add(method);
 		
-		if (level > 2) {
+		if (level > MAX_LEVEL) {
 			return callees;
 		}
 
@@ -94,13 +73,13 @@ public class MethodHelper {
 				continue;
 			}
 
-			Set<IMethod> methods = getIMethods(methodWrappers2);
+			Set<IMethod> methods = getIMethods(methodWrappers2, mainType, notQaTypes);
 			
 			if (!methods.isEmpty()) {
 				callees.addAll(methods);
 				
 				for (IMethod calleeMethod : methods) {
-					Set<IMethod> calleeMethods = getCalleesOf(calleeMethod, level + 1);
+					Set<IMethod> calleeMethods = getCalleesOf(calleeMethod, level + 1, mainType, notQaTypes);
 					
 					if (!calleeMethods.isEmpty()) {
 						callees.addAll(calleeMethods);
@@ -120,13 +99,13 @@ public class MethodHelper {
 		}
 	}
 
-	private static Set<IMethod> getIMethods(MethodWrapper[] methodWrappers) {
+	private static Set<IMethod> getIMethods(MethodWrapper[] methodWrappers, String mainType, Set<String> notQaTypes) {
 		Set<IMethod> methods = new HashSet<>();
 
 		for (MethodWrapper methodWrapper : methodWrappers) {
 			IMethod method = getIMethodFromMethodWrapper(methodWrapper);
 
-			if (method != null && TypeHelper.isQaType(method.getDeclaringType(), "br.com.engdb.geotec", NOT_QA_TYPES)) {
+			if (method != null && TypeHelper.isQaType(method.getDeclaringType(), mainType, notQaTypes)) {
 				methods.add(method);
 			}
 		}
@@ -142,7 +121,7 @@ public class MethodHelper {
 				return (IMethod) methodWrapper.getMember();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			return null;
 		}
 
 		return null;
