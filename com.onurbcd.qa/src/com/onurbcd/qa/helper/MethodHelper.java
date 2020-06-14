@@ -1,7 +1,7 @@
 package com.onurbcd.qa.helper;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -51,40 +51,24 @@ public class MethodHelper {
 	}
 
 	public static Set<IMethod> getCalleesOf(IMethod method, int level, String mainType, Set<String> notQaTypes) {
-		Set<IMethod> callees = new HashSet<>();
+		Set<IMethod> callees = new LinkedHashSet<>();
 		callees.add(method);
 		
 		if (level > MAX_LEVEL) {
 			return callees;
 		}
 
-		CallHierarchy callHierarchy = CallHierarchy.getDefault();
-		IMember[] members = {method};
-		MethodWrapper[] methodWrappers = callHierarchy.getCalleeRoots(members);
+		Set<IMethod> methods = getCalleesMethods(method, level, mainType, notQaTypes);
 		
-		if (methodWrappers == null || methodWrappers.length <= 0) {
+		if (methods.isEmpty()) {
 			return callees;
 		}
 		
-		for (MethodWrapper methodWrapper : methodWrappers) {
-			MethodWrapper[] methodWrappers2 = methodWrapper.getCalls(new NullProgressMonitor());
-
-			if (methodWrappers2 == null || methodWrappers2.length <= 0) {
-				continue;
-			}
-
-			Set<IMethod> methods = getIMethods(methodWrappers2, mainType, notQaTypes);
+		for (IMethod calleeMethod : methods) {
+			Set<IMethod> calleeMethods = getCalleesOf(calleeMethod, level + 1, mainType, notQaTypes);
 			
-			if (!methods.isEmpty()) {
-				callees.addAll(methods);
-				
-				for (IMethod calleeMethod : methods) {
-					Set<IMethod> calleeMethods = getCalleesOf(calleeMethod, level + 1, mainType, notQaTypes);
-					
-					if (!calleeMethods.isEmpty()) {
-						callees.addAll(calleeMethods);
-					}
-				}
+			if (!calleeMethods.isEmpty()) {
+				callees.addAll(calleeMethods);
 			}
 		}
 
@@ -99,8 +83,30 @@ public class MethodHelper {
 		}
 	}
 
+	private static Set<IMethod> getCalleesMethods(IMethod method, int level, String mainType, Set<String> notQaTypes) {
+		CallHierarchy callHierarchy = CallHierarchy.getDefault();
+		IMember[] members = {method};
+		MethodWrapper[] methodWrappers = callHierarchy.getCalleeRoots(members);
+		
+		if (methodWrappers == null || methodWrappers.length <= 0) {
+			return new LinkedHashSet<>();
+		}
+
+		for (MethodWrapper methodWrapper : methodWrappers) {
+			MethodWrapper[] methodWrappers2 = methodWrapper.getCalls(new NullProgressMonitor());
+
+			if (methodWrappers2 == null || methodWrappers2.length <= 0) {
+				continue;
+			}
+
+			return getIMethods(methodWrappers2, mainType, notQaTypes);
+		}
+
+		return new LinkedHashSet<>();
+	}
+
 	private static Set<IMethod> getIMethods(MethodWrapper[] methodWrappers, String mainType, Set<String> notQaTypes) {
-		Set<IMethod> methods = new HashSet<>();
+		Set<IMethod> methods = new LinkedHashSet<>();
 
 		for (MethodWrapper methodWrapper : methodWrappers) {
 			IMethod method = getIMethodFromMethodWrapper(methodWrapper);
