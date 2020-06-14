@@ -11,12 +11,18 @@ public class UnitHelper {
 	private UnitHelper() {
 	}
 
-	public static ICompilationUnit getUnit(IPackageFragment packageFragment, String unitName) throws JavaModelException {
+	public static ICompilationUnit getUnit(IPackageFragment packageFragment, String unitName) {
 		if (packageFragment == null || unitName == null || unitName.trim().isEmpty()) {
 			return null;
 		}
 		
-		ICompilationUnit[] compilationUnits = packageFragment.getCompilationUnits();
+		ICompilationUnit[] compilationUnits;
+
+		try {
+			compilationUnits = packageFragment.getCompilationUnits();
+		} catch (JavaModelException e) {
+			return null;
+		}
 		
 		if (compilationUnits == null || compilationUnits.length <= 0) {
 			return null;

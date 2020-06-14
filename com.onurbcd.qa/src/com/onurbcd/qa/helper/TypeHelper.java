@@ -12,12 +12,18 @@ public class TypeHelper {
 	private TypeHelper() {
 	}
 
-	public static IType getType(ICompilationUnit compilationUnit, String typeName) throws JavaModelException {
+	public static IType getType(ICompilationUnit compilationUnit, String typeName) {
 		if (compilationUnit == null || typeName == null || typeName.trim().isEmpty()) {
 			return null;
 		}
 
-		IType[] types = compilationUnit.getTypes();
+		IType[] types;
+
+		try {
+			types = compilationUnit.getTypes();
+		} catch (JavaModelException e) {
+			return null;
+		}
 
 		if (types == null || types.length <= 0) {
 			return null;

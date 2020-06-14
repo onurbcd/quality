@@ -47,12 +47,18 @@ public class MethodHelper {
 	private MethodHelper() {
 	}
 
-	public static IMethod getMethod(IType type, String methodName, String methodSignature) throws JavaModelException {
+	public static IMethod getMethod(IType type, String methodName, String methodSignature) {
 		if (type == null || methodName == null || methodName.trim().isEmpty() || methodSignature == null || methodSignature.trim().isEmpty()) {
 			return null;
 		}
 
-		IMethod[] methods = type.getMethods();
+		IMethod[] methods;
+
+		try {
+			methods = type.getMethods();
+		} catch (JavaModelException e) {
+			return null;
+		}
 
 		if (methods == null || methods.length <= 0) {
 			return null;

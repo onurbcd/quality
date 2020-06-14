@@ -7,7 +7,6 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
 
 import com.onurbcd.qa.helper.MethodHelper;
 import com.onurbcd.qa.helper.PackageHelper;
@@ -95,11 +94,7 @@ public class AnalysisManager {
 			return;
 		}
 
-		try {
-			compilationUnit = UnitHelper.getUnit(packageFragment, UNIT_NAME);
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
+		compilationUnit = UnitHelper.getUnit(packageFragment, UNIT_NAME);
 
 		if (compilationUnit == null) {
 			sb.append("\n").append("Compilation unit '").append(UNIT_NAME).append("' was not found.");
@@ -111,11 +106,7 @@ public class AnalysisManager {
 			return;
 		}
 
-		try {
-			type = TypeHelper.getType(compilationUnit, TYPE_NAME);
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
+		type = TypeHelper.getType(compilationUnit, TYPE_NAME);
 
 		if (type == null) {
 			sb.append("\n").append("Type '").append(TYPE_NAME).append("' was not found.");
@@ -127,11 +118,7 @@ public class AnalysisManager {
 			return;
 		}
 
-		try {
-			method = MethodHelper.getMethod(type, METHOD_NAME, METHOD_SIGNATURE);
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
+		method = MethodHelper.getMethod(type, METHOD_NAME, METHOD_SIGNATURE);
 
 		if (method == null) {
 			sb.append("\n").append("Method '").append(METHOD_NAME).append("' with signature '").append(METHOD_SIGNATURE).append("' was not found.");
