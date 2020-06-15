@@ -23,8 +23,6 @@ import com.onurbcd.qa.util.QaMethod;
 @SuppressWarnings("restriction")
 public class MethodHelper {
 
-	private static final int MAX_LEVEL = 7;
-
 	private MethodHelper() {
 	}
 
@@ -52,10 +50,10 @@ public class MethodHelper {
 				.findFirst().orElse(null);
 	}
 
-	public static QaMethod getCalleesOf(IMethod method, int level, String mainType, Set<String> notQaTypes) {
+	public static QaMethod getCalleesOf(IMethod method, int level, String mainType, Set<String> notQaTypes, int maxRecursionLevel) {
 		QaMethod qaMethod = new QaMethod(level, method);
 		
-		if (level > MAX_LEVEL) {
+		if (level > maxRecursionLevel) {
 			return qaMethod;
 		}
 
@@ -66,7 +64,7 @@ public class MethodHelper {
 		}
 		
 		for (IMethod calleeMethod : methods) {
-			QaMethod calleeQaMethod = getCalleesOf(calleeMethod, level + 1, mainType, notQaTypes);
+			QaMethod calleeQaMethod = getCalleesOf(calleeMethod, level + 1, mainType, notQaTypes, maxRecursionLevel);
 			qaMethod.addtoCallees(calleeQaMethod);
 		}
 
@@ -97,19 +95,19 @@ public class MethodHelper {
 				continue;
 			}
 
-			return getIMethods(methodWrappers2, mainType, notQaTypes);
+			return getIMethods(methodWrappers2, method, mainType, notQaTypes);
 		}
 
 		return new LinkedHashSet<>();
 	}
 
-	private static Set<IMethod> getIMethods(MethodWrapper[] methodWrappers, String mainType, Set<String> notQaTypes) {
+	private static Set<IMethod> getIMethods(MethodWrapper[] methodWrappers, IMethod parentMethod, String mainType, Set<String> notQaTypes) {
 		Set<IMethod> methods = new LinkedHashSet<>();
 
 		for (MethodWrapper methodWrapper : methodWrappers) {
 			IMethod method = getIMethodFromMethodWrapper(methodWrapper);
 
-			if (method != null && TypeHelper.isQaType(method.getDeclaringType(), mainType, notQaTypes)) {
+			if (method != null && !isSameMethod(parentMethod, method) && TypeHelper.isQaType(method.getDeclaringType(), mainType, notQaTypes)) {
 				methods.add(method);
 			}
 		}
@@ -129,5 +127,23 @@ public class MethodHelper {
 		}
 
 		return null;
+	}
+
+	private static boolean isSameMethod(IMethod parent, IMethod child) {
+		return parent.getElementName() != null &&
+				parent.getElementName().equals(child.getElementName()) &&
+				parent.getDeclaringType() != null &&
+				parent.getDeclaringType().getFullyQualifiedName() != null &&
+				child.getDeclaringType() != null &&
+				parent.getDeclaringType().getFullyQualifiedName().equals(child.getDeclaringType().getFullyQualifiedName()) &&
+				equalsSignature(parent, child);
+	}
+
+	private static boolean equalsSignature(IMethod parent, IMethod child) {
+		try {
+			return parent.getSignature().equals(child.getSignature());
+		} catch (JavaModelException e) {
+			return false;
+		}
 	}
 }

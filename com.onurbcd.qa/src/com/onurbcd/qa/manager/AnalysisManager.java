@@ -11,12 +11,15 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.onurbcd.qa.Activator;
 import com.onurbcd.qa.helper.MethodHelper;
 import com.onurbcd.qa.helper.PackageHelper;
 import com.onurbcd.qa.helper.ProjectHelper;
 import com.onurbcd.qa.helper.TypeHelper;
 import com.onurbcd.qa.helper.UnitHelper;
+import com.onurbcd.qa.preferences.PreferenceConstants;
 import com.onurbcd.qa.util.DateTimeUtil;
 import com.onurbcd.qa.util.FileUtil;
 import com.onurbcd.qa.util.QaMethod;
@@ -82,6 +85,8 @@ public class AnalysisManager {
 
 	private QaMethod qaMethod;
 
+	private int maxRecursionLevel;
+
 	public AnalysisManager() {
 		project = null;
 		packageFragment = null;
@@ -93,21 +98,23 @@ public class AnalysisManager {
 
 	public void run() {
 		Instant start = Instant.now();
+		loadPreferences();
 		runMessage = new StringBuilder("");
 		fileContent = new StringBuilder("");
-		setMessages(true, DateTimeUtil.getNowFormatted(), "\n");
+		setMessages(true, DateTimeUtil.getNowFormatted());
 		handleProject();
 		handlePackage();
 		handleUnit();
 		handleType();
 		handleMethod();
 		handleCalles();
-		setMethodsNamesInMessage();
 		Instant finish = Instant.now();
 		long timeElapsed = Duration.between(start, finish).getSeconds();
 		setMessages(true, "\n\n", "DURATION IN SECONDS: ", String.valueOf(timeElapsed));
 		int numberOfMethods = qaMethod != null ? qaMethod.getNumberOfMethods() : 0;
 		setMessages(true, "\n\n", "NUMBER OF METHODS: ", String.valueOf(numberOfMethods));
+		setMessages(true, "\n\n", "MAX RECURSION LEVEL: ", String.valueOf(maxRecursionLevel));
+		setMethodsNamesInMessage();
 		writeToFile();
 	}
 	
@@ -115,11 +122,16 @@ public class AnalysisManager {
 		return runMessage != null ? runMessage.toString() : "Call method 'run' before get message.";
 	}
 	
+	private void loadPreferences() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		maxRecursionLevel = store.getInt(PreferenceConstants.P_MAX_RECURSION_LEVEL);
+	}
+	
 	private void handleProject() {
 		project = ProjectHelper.getProject(PROJECT_NAME);
 		
 		if (project == null) {
-			setMessages(true, "\n", "Project '", PROJECT_NAME, WAS_NOT_FOUND);
+			setMessages(true, "\n\n", "Project '", PROJECT_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -131,7 +143,7 @@ public class AnalysisManager {
 		packageFragment = PackageHelper.getPackage(project, PACKAGE_NAME);
 
 		if (packageFragment == null) {
-			setMessages(true, "\n", "Package '", PACKAGE_NAME, WAS_NOT_FOUND);
+			setMessages(true, "\n\n", "Package '", PACKAGE_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -143,7 +155,7 @@ public class AnalysisManager {
 		compilationUnit = UnitHelper.getUnit(packageFragment, UNIT_NAME);
 
 		if (compilationUnit == null) {
-			setMessages(true, "\n", "Compilation unit '", UNIT_NAME, WAS_NOT_FOUND);
+			setMessages(true, "\n\n", "Compilation unit '", UNIT_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -155,7 +167,7 @@ public class AnalysisManager {
 		type = TypeHelper.getType(compilationUnit, TYPE_NAME);
 
 		if (type == null) {
-			setMessages(true, "\n", "Type '", TYPE_NAME, WAS_NOT_FOUND);
+			setMessages(true, "\n\n", "Type '", TYPE_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -167,7 +179,7 @@ public class AnalysisManager {
 		method = MethodHelper.getMethod(type, METHOD_NAME, METHOD_SIGNATURE);
 
 		if (method == null) {
-			setMessages(true, "\n", "Method '", METHOD_NAME, "' with signature '", METHOD_SIGNATURE, WAS_NOT_FOUND);
+			setMessages(true, "\n\n", "Method '", METHOD_NAME, "' with signature '", METHOD_SIGNATURE, WAS_NOT_FOUND);
 		}
 	}
 
@@ -176,10 +188,10 @@ public class AnalysisManager {
 			return;
 		}
 
-		qaMethod = MethodHelper.getCalleesOf(method, 1, MAIN_TYPE, NOT_QA_TYPES);
+		qaMethod = MethodHelper.getCalleesOf(method, 1, MAIN_TYPE, NOT_QA_TYPES, maxRecursionLevel);
 
 		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
-			setMessages(true, "\n", "Method '", METHOD_NAME, "' does not have callees.");
+			setMessages(true, "\n\n", "Method '", METHOD_NAME, "' does not have callees.");
 		}
 	}
 
@@ -188,7 +200,7 @@ public class AnalysisManager {
 			return;
 		}
 
-		setMessages(false, qaMethod.toString());
+		setMessages(false, "\n", qaMethod.toString());
 	}
 
 	private void writeToFile() {

@@ -6,11 +6,11 @@
          point="org.eclipse.ui.commands">
       <category
             id="com.onurbcd.qa.commands.category"
-            name="Sample Category">
+            name="Quality">
       </category>
       <command
             categoryId="com.onurbcd.qa.commands.category"
-            name="Sample Command"
+            name="Run Analysis"
             id="com.onurbcd.qa.commands.sampleCommand">
       </command>
    </extension>
@@ -36,7 +36,7 @@
             locationURI="menu:org.eclipse.ui.main.menu?after=additions">
          <menu
                id="com.onurbcd.qa.menus.sampleMenu"
-               label="Sample Menu"
+               label="Quality"
                mnemonic="M">
             <command
                   commandId="com.onurbcd.qa.commands.sampleCommand"
@@ -53,10 +53,24 @@
                   id="com.onurbcd.qa.toolbars.sampleCommand"
                   commandId="com.onurbcd.qa.commands.sampleCommand"
                   icon="icons/sample.png"
-                  tooltip="Say hello world">
+                  tooltip="Run Analysis">
             </command>
          </toolbar>
       </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.onurbcd.qa.preferences.QaPreferencePage"
+            id="com.onurbcd.qa.preferences.QaPreferencePage"
+            name="Quality">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.onurbcd.qa.preferences.PreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>
