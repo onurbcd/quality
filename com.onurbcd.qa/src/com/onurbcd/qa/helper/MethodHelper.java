@@ -23,7 +23,7 @@ import com.onurbcd.qa.util.QaMethod;
 @SuppressWarnings("restriction")
 public class MethodHelper {
 
-	private static final int MAX_LEVEL = 3;
+	private static final int MAX_LEVEL = 7;
 
 	private MethodHelper() {
 	}

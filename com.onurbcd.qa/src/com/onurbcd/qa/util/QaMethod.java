@@ -47,13 +47,17 @@ public class QaMethod {
 	public void addtoCallees(QaMethod qaMethod) {
 		callees.add(qaMethod);
 	}
+	
+	public int getNumberOfMethods() {
+		return 1 + callees.stream().reduce(0, (subtotal, element) -> subtotal + element.getNumberOfMethods(), Integer::sum);
+	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder
 		.append("\n")
-		.append(StringUtil.fill(level * 4, " "))
+		.append(StringUtil.fill((level - 1) * 4, " "))
 		.append(level)
 		.append(" - ")
 		.append(method.getElementName());

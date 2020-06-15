@@ -17,6 +17,8 @@ import com.onurbcd.qa.helper.PackageHelper;
 import com.onurbcd.qa.helper.ProjectHelper;
 import com.onurbcd.qa.helper.TypeHelper;
 import com.onurbcd.qa.helper.UnitHelper;
+import com.onurbcd.qa.util.DateTimeUtil;
+import com.onurbcd.qa.util.FileUtil;
 import com.onurbcd.qa.util.QaMethod;
 
 public class AnalysisManager {
@@ -57,8 +59,16 @@ public class AnalysisManager {
 			"br.com.engdb.geotec.web.soap.pims.entity"));
 
 	private static final String WAS_NOT_FOUND = "' was not found.";
+
+	private static final String FILE_PATH = "C:\\Users\\bmiguellei\\Desktop\\";
 	
-	private StringBuilder sb;
+	private static final String FILE_NAME = "qa-analysis-";
+	
+	private static final String FILE_EXTENSION = ".txt";
+	
+	private StringBuilder runMessage;
+
+	private StringBuilder fileContent;
 	
 	private IProject project;
 
@@ -83,7 +93,9 @@ public class AnalysisManager {
 
 	public void run() {
 		Instant start = Instant.now();
-		sb = new StringBuilder("");
+		runMessage = new StringBuilder("");
+		fileContent = new StringBuilder("");
+		setMessages(true, DateTimeUtil.getNowFormatted(), "\n");
 		handleProject();
 		handlePackage();
 		handleUnit();
@@ -93,18 +105,21 @@ public class AnalysisManager {
 		setMethodsNamesInMessage();
 		Instant finish = Instant.now();
 		long timeElapsed = Duration.between(start, finish).getSeconds();
-		sb.append("\n\n").append("DURATION IN SECONDS: ").append(timeElapsed);
+		setMessages(true, "\n\n", "DURATION IN SECONDS: ", String.valueOf(timeElapsed));
+		int numberOfMethods = qaMethod != null ? qaMethod.getNumberOfMethods() : 0;
+		setMessages(true, "\n\n", "NUMBER OF METHODS: ", String.valueOf(numberOfMethods));
+		writeToFile();
 	}
 	
 	public String getMessage() {
-		return sb != null ? sb.toString() : "Call method 'run' before get message.";
+		return runMessage != null ? runMessage.toString() : "Call method 'run' before get message.";
 	}
 	
 	private void handleProject() {
 		project = ProjectHelper.getProject(PROJECT_NAME);
 		
 		if (project == null) {
-			sb.append("\n").append("Project '").append(PROJECT_NAME).append(WAS_NOT_FOUND);
+			setMessages(true, "\n", "Project '", PROJECT_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -116,7 +131,7 @@ public class AnalysisManager {
 		packageFragment = PackageHelper.getPackage(project, PACKAGE_NAME);
 
 		if (packageFragment == null) {
-			sb.append("\n").append("Package '").append(PACKAGE_NAME).append(WAS_NOT_FOUND);
+			setMessages(true, "\n", "Package '", PACKAGE_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -128,7 +143,7 @@ public class AnalysisManager {
 		compilationUnit = UnitHelper.getUnit(packageFragment, UNIT_NAME);
 
 		if (compilationUnit == null) {
-			sb.append("\n").append("Compilation unit '").append(UNIT_NAME).append(WAS_NOT_FOUND);
+			setMessages(true, "\n", "Compilation unit '", UNIT_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -140,7 +155,7 @@ public class AnalysisManager {
 		type = TypeHelper.getType(compilationUnit, TYPE_NAME);
 
 		if (type == null) {
-			sb.append("\n").append("Type '").append(TYPE_NAME).append(WAS_NOT_FOUND);
+			setMessages(true, "\n", "Type '", TYPE_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -152,7 +167,7 @@ public class AnalysisManager {
 		method = MethodHelper.getMethod(type, METHOD_NAME, METHOD_SIGNATURE);
 
 		if (method == null) {
-			sb.append("\n").append("Method '").append(METHOD_NAME).append("' with signature '").append(METHOD_SIGNATURE).append(WAS_NOT_FOUND);
+			setMessages(true, "\n", "Method '", METHOD_NAME, "' with signature '", METHOD_SIGNATURE, WAS_NOT_FOUND);
 		}
 	}
 
@@ -164,7 +179,7 @@ public class AnalysisManager {
 		qaMethod = MethodHelper.getCalleesOf(method, 1, MAIN_TYPE, NOT_QA_TYPES);
 
 		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
-			sb.append("\n").append("Method '").append(METHOD_NAME).append("' does not have callees.");
+			setMessages(true, "\n", "Method '", METHOD_NAME, "' does not have callees.");
 		}
 	}
 
@@ -173,6 +188,18 @@ public class AnalysisManager {
 			return;
 		}
 
-		sb.append(qaMethod.toString());
+		setMessages(false, qaMethod.toString());
+	}
+
+	private void writeToFile() {
+		String fullFileName = FILE_PATH + FILE_NAME + DateTimeUtil.getNowFormatted() + FILE_EXTENSION;
+		FileUtil.writeStringToFile(fullFileName, fileContent.toString());
+	}
+
+	private void setMessages(boolean addToMessage, String... args) {
+		for (String str : args) {
+			runMessage.append(addToMessage ? str : "");
+			fileContent.append(str);
+		}
 	}
 }
