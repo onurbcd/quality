@@ -188,7 +188,7 @@ public class AnalysisManager {
 			return;
 		}
 
-		qaMethod = MethodHelper.getCalleesOf(method, 1, MAIN_TYPE, NOT_QA_TYPES, maxRecursionLevel);
+		qaMethod = MethodHelper.getCalleesOf(method, null, 1, MAIN_TYPE, NOT_QA_TYPES, maxRecursionLevel);
 
 		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
 			setMessages(true, "\n\n", "Method '", METHOD_NAME, "' does not have callees.");

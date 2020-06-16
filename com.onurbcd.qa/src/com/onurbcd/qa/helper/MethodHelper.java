@@ -50,8 +50,8 @@ public class MethodHelper {
 				.findFirst().orElse(null);
 	}
 
-	public static QaMethod getCalleesOf(IMethod method, int level, String mainType, Set<String> notQaTypes, int maxRecursionLevel) {
-		QaMethod qaMethod = new QaMethod(level, method);
+	public static QaMethod getCalleesOf(IMethod method, QaMethod parentMethod, int level, String mainType, Set<String> notQaTypes, int maxRecursionLevel) {
+		QaMethod qaMethod = new QaMethod(level, method, parentMethod);
 		
 		if (level > maxRecursionLevel) {
 			return qaMethod;
@@ -64,7 +64,11 @@ public class MethodHelper {
 		}
 		
 		for (IMethod calleeMethod : methods) {
-			QaMethod calleeQaMethod = getCalleesOf(calleeMethod, level + 1, mainType, notQaTypes, maxRecursionLevel);
+			if (qaMethod.isReincarnation(calleeMethod)) {
+				continue;
+			}
+
+			QaMethod calleeQaMethod = getCalleesOf(calleeMethod, qaMethod, level + 1, mainType, notQaTypes, maxRecursionLevel);
 			qaMethod.addtoCallees(calleeQaMethod);
 		}
 
@@ -107,7 +111,11 @@ public class MethodHelper {
 		for (MethodWrapper methodWrapper : methodWrappers) {
 			IMethod method = getIMethodFromMethodWrapper(methodWrapper);
 
-			if (method != null && !isSameMethod(parentMethod, method) && TypeHelper.isQaType(method.getDeclaringType(), mainType, notQaTypes)) {
+			if (method != null &&
+					!parentMethod.equals(method) &&
+					!methods.contains(method) &&
+					TypeHelper.isQaType(method.getDeclaringType(), mainType, notQaTypes)) {
+
 				methods.add(method);
 			}
 		}
@@ -127,23 +135,5 @@ public class MethodHelper {
 		}
 
 		return null;
-	}
-
-	private static boolean isSameMethod(IMethod parent, IMethod child) {
-		return parent.getElementName() != null &&
-				parent.getElementName().equals(child.getElementName()) &&
-				parent.getDeclaringType() != null &&
-				parent.getDeclaringType().getFullyQualifiedName() != null &&
-				child.getDeclaringType() != null &&
-				parent.getDeclaringType().getFullyQualifiedName().equals(child.getDeclaringType().getFullyQualifiedName()) &&
-				equalsSignature(parent, child);
-	}
-
-	private static boolean equalsSignature(IMethod parent, IMethod child) {
-		try {
-			return parent.getSignature().equals(child.getSignature());
-		} catch (JavaModelException e) {
-			return false;
-		}
 	}
 }

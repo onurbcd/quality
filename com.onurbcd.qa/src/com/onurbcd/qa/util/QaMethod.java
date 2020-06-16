@@ -11,12 +11,15 @@ public class QaMethod {
 
 	private IMethod method;
 
+	private QaMethod parentMethod;
+
 	private Set<QaMethod> callees;
 
-	public QaMethod(int level, IMethod method) {
+	public QaMethod(int level, IMethod method, QaMethod parentMethod) {
 		super();
 		this.level = level;
 		this.method = method;
+		this.parentMethod = parentMethod;
 		callees = new LinkedHashSet<>();
 	}
 
@@ -36,6 +39,14 @@ public class QaMethod {
 		this.method = method;
 	}
 
+	public QaMethod getParentMethod() {
+		return parentMethod;
+	}
+
+	public void setParentMethod(QaMethod parentMethod) {
+		this.parentMethod = parentMethod;
+	}
+
 	public Set<QaMethod> getCallees() {
 		return callees;
 	}
@@ -50,6 +61,18 @@ public class QaMethod {
 	
 	public int getNumberOfMethods() {
 		return 1 + callees.stream().reduce(0, (subtotal, element) -> subtotal + element.getNumberOfMethods(), Integer::sum);
+	}
+
+	public boolean isReincarnation(IMethod newMethod) {
+		if (parentMethod == null) {
+			return false;
+		}
+		
+		if (newMethod.equals(parentMethod.getMethod())) {
+			return true;
+		}
+		
+		return parentMethod.isReincarnation(newMethod);
 	}
 
 	@Override
