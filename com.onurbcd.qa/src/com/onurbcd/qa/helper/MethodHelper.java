@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.corext.callhierarchy.CallHierarchy;
 import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
 
@@ -73,6 +73,27 @@ public class MethodHelper {
 		}
 
 		return qaMethod;
+	}
+	
+	public static String getMethodFullName(IMethod iMethod) {
+        StringBuilder name = new StringBuilder();
+
+        try {
+        	String signature = Signature.toString(iMethod.getSignature());
+        	int firstIndexOfEmpty = signature.indexOf(' ');
+        	String returnType = signature.substring(0, firstIndexOfEmpty);
+        	String params = signature.substring(firstIndexOfEmpty + 1, signature.length());
+        	name.append(FlagsHelper.getModifier(iMethod.getFlags()))
+            .append(" ")
+            .append(returnType)
+            .append(" ")
+            .append(iMethod.getElementName())
+            .append(params);
+        } catch (JavaModelException e) {
+        	return "error getMethodFullName";
+        }
+
+        return name.toString();
 	}
 
 	private static boolean safeEquals(IMethod method, String methodSignature) {

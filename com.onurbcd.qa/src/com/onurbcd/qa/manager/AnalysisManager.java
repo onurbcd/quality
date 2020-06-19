@@ -17,6 +17,7 @@ import com.onurbcd.qa.Activator;
 import com.onurbcd.qa.helper.MethodHelper;
 import com.onurbcd.qa.helper.PackageHelper;
 import com.onurbcd.qa.helper.ProjectHelper;
+import com.onurbcd.qa.helper.ReportHelper;
 import com.onurbcd.qa.helper.TypeHelper;
 import com.onurbcd.qa.helper.UnitHelper;
 import com.onurbcd.qa.preferences.PreferenceConstants;
@@ -25,6 +26,8 @@ import com.onurbcd.qa.util.FileUtil;
 import com.onurbcd.qa.util.QaMethod;
 
 public class AnalysisManager {
+	
+	// PRIVATE STATIC PROPERTIES
 	
 	private static final String PROJECT_NAME = "geotec";
 
@@ -69,6 +72,8 @@ public class AnalysisManager {
 	
 	private static final String FILE_EXTENSION = ".txt";
 	
+	// PRIVATE PROPERTIES
+
 	private StringBuilder runMessage;
 
 	private StringBuilder fileContent;
@@ -116,6 +121,7 @@ public class AnalysisManager {
 		setMessages(true, "\n\n", "MAX RECURSION LEVEL: ", String.valueOf(maxRecursionLevel));
 		setMethodsNamesInMessage();
 		writeToFile();
+		ReportHelper.processReport(qaMethod);
 	}
 	
 	public String getMessage() {

@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.IMethod;
 
+import com.onurbcd.qa.helper.MethodHelper;
+
 public class QaMethod {
 
 	private int level;
@@ -83,7 +85,7 @@ public class QaMethod {
 		.append(StringUtil.fill((level - 1) * 4, " "))
 		.append(level)
 		.append(" - ")
-		.append(method.getElementName());
+		.append(MethodHelper.getMethodFullName(method));
 		
 		for (QaMethod qaMethod : callees) {
 			builder.append(qaMethod.toString());
