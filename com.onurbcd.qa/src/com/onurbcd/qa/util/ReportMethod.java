@@ -5,11 +5,14 @@ public class ReportMethod {
 	private String className;
 	
 	private String signature;
+	
+	private int loc;
 
-	public ReportMethod(String className, String signature) {
+	public ReportMethod(String className, String signature, int loc) {
 		super();
 		this.className = className;
 		this.signature = signature;
+		this.loc = loc;
 	}
 
 	public String getClassName() {
@@ -26,5 +29,13 @@ public class ReportMethod {
 
 	public void setSignature(String signature) {
 		this.signature = signature;
+	}
+
+	public int getLoc() {
+		return loc;
+	}
+
+	public void setLoc(int loc) {
+		this.loc = loc;
 	}
 }

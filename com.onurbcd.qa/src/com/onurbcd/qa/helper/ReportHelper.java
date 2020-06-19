@@ -5,6 +5,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.JavaModelException;
+
+import com.onurbcd.qa.metrics.LOCCalculator;
 import com.onurbcd.qa.util.DateTimeUtil;
 import com.onurbcd.qa.util.FileUtil;
 import com.onurbcd.qa.util.QaMethod;
@@ -46,18 +50,9 @@ public class ReportHelper {
 	private static void addReportMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod) {
 		String className = qaMethod.getMethod().getDeclaringType().getFullyQualifiedName();
 		String signature = MethodHelper.getMethodFullName(qaMethod.getMethod());
-
-		/*try {
-			String source = qaMethod.getMethod().getSource();
-			Document document = new Document(source);
-			int numberOfLines = document.getNumberOfLines();
-			int i = 0;
-			i++;
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}*/
-
-		ReportMethod reportMethod = new ReportMethod(className, signature);
+		String source = getSourceSafe(qaMethod.getMethod());
+		int loc = LOCCalculator.calculate(source);
+		ReportMethod reportMethod = new ReportMethod(className, signature, loc);
 		
 		if (reports.containsKey(className)) {
 			if (reports.get(className).stream().noneMatch(rm -> rm.getSignature().equals(signature))) {
@@ -70,6 +65,14 @@ public class ReportHelper {
 		}
 	}
 	
+	private static String getSourceSafe(IMethod method) {
+		try {
+			return method.getSource();
+		} catch (JavaModelException e) {
+			return "";
+		}
+	}
+	
 	private static void generateReport(Map<String, List<ReportMethod>> reports) {
 		StringBuilder reportContent = new StringBuilder();
 		int numberOfMethods = 0;
@@ -78,7 +81,8 @@ public class ReportHelper {
 	        reportContent.append(entry.getKey()).append("\n");
 	        
 	        for (ReportMethod reportMethod : entry.getValue()) {
-	        	reportContent.append("    ").append(reportMethod.getSignature()).append("\n");
+	        	reportContent.append("    ").append(reportMethod.getSignature()).append("\n")
+	        	.append("        LOC: ").append(reportMethod.getLoc()).append("\n");
 	        	numberOfMethods++;
 			}
 	        
