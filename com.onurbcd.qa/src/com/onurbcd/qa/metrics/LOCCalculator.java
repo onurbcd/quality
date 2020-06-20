@@ -11,23 +11,23 @@ public class LOCCalculator {
 	private LOCCalculator() {
 	}
 
-	public static int calculate(String sourceCode) {
+	public static LOCResult calculate(String sourceCode) {
 		if (sourceCode == null || sourceCode.trim().isEmpty()) {
-			return 0;
+			return new LOCResult(0, "");
 		}
 		
-		int loc = 0;
+		LOCResult locResult = new LOCResult(0, "");
 		
 		try {
 			InputStream inputStream = new ByteArrayInputStream(sourceCode.getBytes());
 			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-			loc = getNumberOfLines(reader);
+			locResult = getNumberOfLines(reader);
 			reader.close();
 			inputStream.close();
 		} catch (IOException e) {
 		}
 		
-		return loc;
+		return locResult;
 	}
 
 	// Code extracted from https://gist.github.com/shiva27/1432290
@@ -44,34 +44,43 @@ public class LOCCalculator {
 	 * line is a valid source code line, count++ If comment has begun in the line,
 	 * set commentBegan = true goto Start End: print count
 	 */
-	private static int getNumberOfLines(BufferedReader bReader) throws IOException {
+	private static LOCResult getNumberOfLines(BufferedReader bReader) throws IOException {
 		int count = 0;
+		StringBuilder sourceCode = new StringBuilder();
 		boolean commentBegan = false;
 		String line = null;
 
 		while ((line = bReader.readLine()) != null) {
 			line = line.trim();
+
 			if ("".equals(line) || line.startsWith("//")) {
 				continue;
 			}
+
 			if (commentBegan) {
 				if (commentEnded(line)) {
 					line = line.substring(line.indexOf("*/") + 2).trim();
 					commentBegan = false;
+
 					if ("".equals(line) || line.startsWith("//")) {
 						continue;
 					}
-				} else
+				} else {
 					continue;
+				}
 			}
+
 			if (isSourceCodeLine(line)) {
 				count++;
+				sourceCode.append(line);
 			}
+
 			if (commentBegan(line)) {
 				commentBegan = true;
 			}
 		}
-		return count;
+
+		return new LOCResult(count, sourceCode.toString());
 	}
 
 	/**
@@ -84,10 +93,13 @@ public class LOCCalculator {
 		// If line = /* */, this method will return false
 		// If line = /* */ /*, this method will return true
 		int index = line.indexOf("/*");
+
 		if (index < 0) {
 			return false;
 		}
+
 		int quoteStartIndex = line.indexOf("\"");
+
 		if (quoteStartIndex != -1 && quoteStartIndex < index) {
 			while (quoteStartIndex > -1) {
 				line = line.substring(quoteStartIndex + 1);
@@ -95,8 +107,10 @@ public class LOCCalculator {
 				line = line.substring(quoteEndIndex + 1);
 				quoteStartIndex = line.indexOf("\"");
 			}
+
 			return commentBegan(line);
 		}
+
 		return !commentEnded(line.substring(index + 2));
 	}
 
@@ -110,18 +124,17 @@ public class LOCCalculator {
 		// If line = */ /* , this method will return false
 		// If line = */ /* */, this method will return true
 		int index = line.indexOf("*/");
+
 		if (index < 0) {
 			return false;
 		} else {
 			String subString = line.substring(index + 2).trim();
+
 			if ("".equals(subString) || subString.startsWith("//")) {
 				return true;
 			}
-			if (commentBegan(subString)) {
-				return false;
-			} else {
-				return true;
-			}
+
+			return !commentBegan(subString);
 		}
 	}
 

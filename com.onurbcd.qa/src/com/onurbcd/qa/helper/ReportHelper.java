@@ -9,6 +9,8 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 
 import com.onurbcd.qa.metrics.LOCCalculator;
+import com.onurbcd.qa.metrics.LOCResult;
+import com.onurbcd.qa.metrics.MCCCalculator;
 import com.onurbcd.qa.util.DateTimeUtil;
 import com.onurbcd.qa.util.FileUtil;
 import com.onurbcd.qa.util.QaMethod;
@@ -51,14 +53,19 @@ public class ReportHelper {
 		String className = qaMethod.getMethod().getDeclaringType().getFullyQualifiedName();
 		String signature = MethodHelper.getMethodFullName(qaMethod.getMethod());
 		String source = getSourceSafe(qaMethod.getMethod());
-		int loc = LOCCalculator.calculate(source);
-		ReportMethod reportMethod = new ReportMethod(className, signature, loc);
+		ReportMethod reportMethod = new ReportMethod(className, signature);
 		
 		if (reports.containsKey(className)) {
 			if (reports.get(className).stream().noneMatch(rm -> rm.getSignature().equals(signature))) {
+				LOCResult locResult = LOCCalculator.calculate(source);
+				int mcc = MCCCalculator.calculate(source, locResult.getSourceCode());
+				reportMethod.setMetrics(locResult.getCount(), mcc);
 				reports.get(className).add(reportMethod);
 			}
 		} else {
+			LOCResult locResult = LOCCalculator.calculate(source);
+			int mcc = MCCCalculator.calculate(source, locResult.getSourceCode());
+			reportMethod.setMetrics(locResult.getCount(), mcc);
 			List<ReportMethod> methods = new ArrayList<>();
 			methods.add(reportMethod);
 			reports.put(className, methods);
@@ -82,7 +89,8 @@ public class ReportHelper {
 	        
 	        for (ReportMethod reportMethod : entry.getValue()) {
 	        	reportContent.append("    ").append(reportMethod.getSignature()).append("\n")
-	        	.append("        LOC: ").append(reportMethod.getLoc()).append("\n");
+	        	.append("        LOC: ").append(reportMethod.getLoc()).append("\n")
+	        	.append("        MCC: ").append(reportMethod.getMcc()).append("\n");
 	        	numberOfMethods++;
 			}
 	        

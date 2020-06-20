@@ -7,12 +7,18 @@ public class ReportMethod {
 	private String signature;
 	
 	private int loc;
+	
+	private int mcc;
 
-	public ReportMethod(String className, String signature, int loc) {
+	public ReportMethod(String className, String signature) {
 		super();
 		this.className = className;
 		this.signature = signature;
+	}
+	
+	public void setMetrics(int loc, int mcc) {
 		this.loc = loc;
+		this.mcc = mcc;
 	}
 
 	public String getClassName() {
@@ -37,5 +43,13 @@ public class ReportMethod {
 
 	public void setLoc(int loc) {
 		this.loc = loc;
+	}
+
+	public int getMcc() {
+		return mcc;
+	}
+
+	public void setMcc(int mcc) {
+		this.mcc = mcc;
 	}
 }
