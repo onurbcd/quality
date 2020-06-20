@@ -9,8 +9,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jdt.core;bundle-version="3.21.0",
  org.eclipse.core.resources;bundle-version="3.13.700",
- org.eclipse.jdt.ui;bundle-version="3.21.0",
- org.eclipse.e4.ui.di;bundle-version="1.2.800"
+ org.eclipse.jdt.ui;bundle-version="3.21.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: com.onurbcd.qa
 Bundle-ActivationPolicy: lazy

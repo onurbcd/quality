@@ -8,6 +8,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import com.onurbcd.qa.helper.JunitHelper;
+
 public class JobManager {
 
 	private JobManager() {
@@ -17,6 +19,7 @@ public class JobManager {
 
 	public static void scheduleJob(ExecutionEvent event) {
 		Job job = Job.create("Analyse method", monitor -> {
+			JunitHelper.processCoverageReport();
 			run();
 			syncWithUi(event);
 		});
