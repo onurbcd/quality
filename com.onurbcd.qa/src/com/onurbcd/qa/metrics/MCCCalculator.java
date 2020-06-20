@@ -35,6 +35,8 @@ public class MCCCalculator {
 	private static final String AND = "&&";
 	
 	private static final String OR = "||";
+	
+	private static final String LAMBDA_FOR_EACH = "||";
 
 	private MCCCalculator() {
 	}
@@ -54,6 +56,7 @@ public class MCCCalculator {
 		int mcc = mccVisitor.getMcc();
 		int and = StringUtil.countOccurrences(sourceCode, AND);
 		int or = StringUtil.countOccurrences(sourceCode, OR);
-		return mcc + and + or;
+		int lambdaForEach = StringUtil.countOccurrences(sourceCode, LAMBDA_FOR_EACH);
+		return mcc + and + or + lambdaForEach + 1;
 	}
 }

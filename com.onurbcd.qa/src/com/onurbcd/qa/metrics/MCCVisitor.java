@@ -95,7 +95,6 @@ public class MCCVisitor extends ASTVisitor {
 				doStatement +
 				switchCase +
 				catchClause +
-				conditionalExpression +
-				1;
+				conditionalExpression;
 	}
 }
