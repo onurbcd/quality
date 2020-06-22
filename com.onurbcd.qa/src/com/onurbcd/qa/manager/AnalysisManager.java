@@ -62,7 +62,28 @@ public class AnalysisManager {
 			"br.com.engdb.geotec.web.rest.pims.dto",
 			"br.com.engdb.geotec.web.rest.vm",
 			"br.com.engdb.geotec.web.soap.grg.dto",
-			"br.com.engdb.geotec.web.soap.pims.entity"));
+			"br.com.engdb.geotec.web.soap.pims.entity",
+			
+			
+			"br.com.engdb.geotec.util.AppExcelReader",
+			"br.com.engdb.geotec.service.report.LfwDateUtil",
+			"br.com.engdb.geotec.service.report.AppDateFormat",
+			"br.com.engdb.geotec.util.NumberUtil",
+			"br.com.engdb.geotec.util.TemplateExcelUtil",
+			"br.com.engdb.geotec.helper.MessageSourceHelper",
+			"br.com.engdb.geotec.service.util.DateUtil",
+			"br.com.engdb.geotec.service.MessageSourceService",
+			"br.com.engdb.geotec.util.FormulaUtil",
+			"br.com.engdb.geotec.service.util.HibernateUtils",
+			"br.com.engdb.geotec.service.PadraoEnvioEmailService",
+			"br.com.engdb.geotec.security.SecurityUtils",
+			"br.com.engdb.geotec.service.util.BasicAuthenticationService",
+			"br.com.engdb.geotec.service.EmailService",
+			"br.com.engdb.geotec.service.ResponsabilidadeService",
+			"br.com.engdb.geotec.service.PadraoPalavraChaveService",
+			"br.com.engdb.geotec.service.mail.PalavraChaveUtil",
+			"br.com.engdb.geotec.service.OrdemServicoEnvioEmailService"
+			));
 
 	private static final String WAS_NOT_FOUND = "' was not found.";
 

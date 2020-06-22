@@ -9,6 +9,8 @@ public class ReportMethod {
 	private int loc;
 	
 	private int mcc;
+	
+	private double coverage;
 
 	public ReportMethod(String className, String signature) {
 		super();
@@ -16,9 +18,10 @@ public class ReportMethod {
 		this.signature = signature;
 	}
 	
-	public void setMetrics(int loc, int mcc) {
+	public void setMetrics(int loc, int mcc, double coverage) {
 		this.loc = loc;
 		this.mcc = mcc;
+		this.coverage = coverage;
 	}
 
 	public String getClassName() {
@@ -51,5 +54,18 @@ public class ReportMethod {
 
 	public void setMcc(int mcc) {
 		this.mcc = mcc;
+	}
+	
+	public double getCoverage() {
+		return coverage;
+	}
+
+	public void setCoverage(double coverage) {
+		this.coverage = coverage;
+	}
+
+	public double getHours() {
+		// MCC * 0.5 + LOC * 0.25
+		return (mcc * 0.4) + (loc * 0.15);
 	}
 }

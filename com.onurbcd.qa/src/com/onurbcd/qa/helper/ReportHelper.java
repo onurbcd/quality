@@ -23,6 +23,8 @@ public class ReportHelper {
 	private static final String REPORT_FILE_NAME = "qa-analysis-report-";
 	
 	private static final String REPORT_FILE_EXTENSION = ".txt";
+	
+	private static final String JUNIT_COVERAGE_REPORT = "C:\\Users\\bmiguellei\\Desktop\\geotec-test-coverage.xml";
 
 	private ReportHelper() {
 	}
@@ -33,23 +35,24 @@ public class ReportHelper {
 		}
 		
 		Map<String, List<ReportMethod>> reports = new LinkedHashMap<>();
-		processQaMethod(reports, qaMethod);
+		String xml = FileUtil.getJunitCoverageReport(JUNIT_COVERAGE_REPORT);
+		processQaMethod(reports, qaMethod, xml);
 		generateReport(reports);
 	}
 	
-	private static void processQaMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod) {
-		addReportMethod(reports, qaMethod);
+	private static void processQaMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod, String xml) {
+		addReportMethod(reports, qaMethod, xml);
 		
 		if (qaMethod.getCallees() == null || qaMethod.getCallees().isEmpty()) {
 			return;
 		}
 		
 		for (QaMethod calleeQaMethod : qaMethod.getCallees()) {
-			processQaMethod(reports, calleeQaMethod);
+			processQaMethod(reports, calleeQaMethod, xml);
 		}
 	}
 	
-	private static void addReportMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod) {
+	private static void addReportMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod, String xml) {
 		String className = qaMethod.getMethod().getDeclaringType().getFullyQualifiedName();
 		String signature = MethodHelper.getMethodFullName(qaMethod.getMethod());
 		String source = getSourceSafe(qaMethod.getMethod());
@@ -57,18 +60,26 @@ public class ReportHelper {
 		
 		if (reports.containsKey(className)) {
 			if (reports.get(className).stream().noneMatch(rm -> rm.getSignature().equals(signature))) {
-				LOCResult locResult = LOCCalculator.calculate(source);
-				int mcc = MCCCalculator.calculate(source, locResult.getSourceCode());
-				reportMethod.setMetrics(locResult.getCount(), mcc);
-				reports.get(className).add(reportMethod);
+				double coverage = JunitHelper.processCoverageReport(xml, className, qaMethod.getMethod().getElementName());
+				
+				if (coverage < 0.6) {
+					LOCResult locResult = LOCCalculator.calculate(source);
+					int mcc = MCCCalculator.calculate(source, locResult.getSourceCode());
+					reportMethod.setMetrics(locResult.getCount(), mcc, coverage);
+					reports.get(className).add(reportMethod);
+				}
 			}
 		} else {
-			LOCResult locResult = LOCCalculator.calculate(source);
-			int mcc = MCCCalculator.calculate(source, locResult.getSourceCode());
-			reportMethod.setMetrics(locResult.getCount(), mcc);
-			List<ReportMethod> methods = new ArrayList<>();
-			methods.add(reportMethod);
-			reports.put(className, methods);
+			double coverage = JunitHelper.processCoverageReport(xml, className, qaMethod.getMethod().getElementName());
+			
+			if (coverage < 0.6) {
+				LOCResult locResult = LOCCalculator.calculate(source);
+				int mcc = MCCCalculator.calculate(source, locResult.getSourceCode());
+				reportMethod.setMetrics(locResult.getCount(), mcc, coverage);
+				List<ReportMethod> methods = new ArrayList<>();
+				methods.add(reportMethod);
+				reports.put(className, methods);
+			}
 		}
 	}
 	
@@ -83,14 +94,19 @@ public class ReportHelper {
 	private static void generateReport(Map<String, List<ReportMethod>> reports) {
 		StringBuilder reportContent = new StringBuilder();
 		int numberOfMethods = 0;
+		double totalHours = 0;
 		
 		for (Map.Entry<String, List<ReportMethod>> entry : reports.entrySet()) {
 	        reportContent.append(entry.getKey()).append("\n");
 	        
 	        for (ReportMethod reportMethod : entry.getValue()) {
+	        	totalHours += reportMethod.getHours();
+	        	
 	        	reportContent.append("    ").append(reportMethod.getSignature()).append("\n")
 	        	.append("        LOC: ").append(reportMethod.getLoc()).append("\n")
-	        	.append("        MCC: ").append(reportMethod.getMcc()).append("\n");
+	        	.append("        MCC: ").append(reportMethod.getMcc()).append("\n")
+	        	.append("   COVERAGE: ").append(reportMethod.getCoverage()).append("\n")
+	        	.append("      HORAS: ").append(reportMethod.getHours()).append("\n");
 	        	numberOfMethods++;
 			}
 	        
@@ -101,7 +117,7 @@ public class ReportHelper {
 			return;
 		}
 		
-		String header = "NUMBER OF METHODS: " + numberOfMethods + "\n\n";
+		String header = "TOTAL HOURS: " + totalHours +  "\nNUMBER OF METHODS: " + numberOfMethods + "\n\n";
 		String fullFileName = REPORT_FILE_PATH + REPORT_FILE_NAME + DateTimeUtil.getNowFormatted() + REPORT_FILE_EXTENSION;
 		FileUtil.writeStringToFile(fullFileName, header + reportContent.toString());
 	}

@@ -1,5 +1,9 @@
 package com.onurbcd.qa.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
 public class StringUtil {
@@ -23,5 +27,22 @@ public class StringUtil {
 		}
 
 		return (strSource.split(Pattern.quote(pattern), -1).length) - 1;
+	}
+	
+	public static String inputStreamToString(InputStream inputStream) throws IOException {
+		if (inputStream == null) {
+			return null;
+		}
+		
+	    StringBuilder sb = new StringBuilder();
+	    String line;
+	    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+	    while ((line = bufferedReader.readLine()) != null) {
+	        sb.append(line);
+	    }
+
+	    bufferedReader.close();
+	    return sb.toString();
 	}
 }
