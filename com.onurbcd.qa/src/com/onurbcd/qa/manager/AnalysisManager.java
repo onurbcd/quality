@@ -6,30 +6,27 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.onurbcd.qa.Activator;
 import com.onurbcd.qa.helper.MethodHelper;
 import com.onurbcd.qa.helper.PackageHelper;
 import com.onurbcd.qa.helper.ProjectHelper;
 import com.onurbcd.qa.helper.ReportHelper;
 import com.onurbcd.qa.helper.TypeHelper;
 import com.onurbcd.qa.helper.UnitHelper;
-import com.onurbcd.qa.preferences.PreferenceConstants;
+import com.onurbcd.qa.preferences.PreferenceHelper;
+import com.onurbcd.qa.preferences.QaPreference;
 import com.onurbcd.qa.util.DateTimeUtil;
-import com.onurbcd.qa.util.FileUtil;
 import com.onurbcd.qa.util.QaMethod;
 
 public class AnalysisManager {
 	
 	// PRIVATE STATIC PROPERTIES
-	
-	private static final String PROJECT_NAME = "geotec";
 
 	private static final String PACKAGE_NAME = "br.com.engdb.geotec.quartz.job";
 
@@ -62,42 +59,14 @@ public class AnalysisManager {
 			"br.com.engdb.geotec.web.rest.pims.dto",
 			"br.com.engdb.geotec.web.rest.vm",
 			"br.com.engdb.geotec.web.soap.grg.dto",
-			"br.com.engdb.geotec.web.soap.pims.entity",
-			
-			
-			"br.com.engdb.geotec.util.AppExcelReader",
-			"br.com.engdb.geotec.service.report.LfwDateUtil",
-			"br.com.engdb.geotec.service.report.AppDateFormat",
-			"br.com.engdb.geotec.util.NumberUtil",
-			"br.com.engdb.geotec.util.TemplateExcelUtil",
-			"br.com.engdb.geotec.helper.MessageSourceHelper",
-			"br.com.engdb.geotec.service.util.DateUtil",
-			"br.com.engdb.geotec.service.MessageSourceService",
-			"br.com.engdb.geotec.util.FormulaUtil",
-			"br.com.engdb.geotec.service.util.HibernateUtils",
-			"br.com.engdb.geotec.service.PadraoEnvioEmailService",
-			"br.com.engdb.geotec.security.SecurityUtils",
-			"br.com.engdb.geotec.service.util.BasicAuthenticationService",
-			"br.com.engdb.geotec.service.EmailService",
-			"br.com.engdb.geotec.service.ResponsabilidadeService",
-			"br.com.engdb.geotec.service.PadraoPalavraChaveService",
-			"br.com.engdb.geotec.service.mail.PalavraChaveUtil",
-			"br.com.engdb.geotec.service.OrdemServicoEnvioEmailService"
+			"br.com.engdb.geotec.web.soap.pims.entity"
 			));
 
 	private static final String WAS_NOT_FOUND = "' was not found.";
-
-	private static final String FILE_PATH = "C:\\Users\\bmiguellei\\Desktop\\";
-	
-	private static final String FILE_NAME = "qa-analysis-";
-	
-	private static final String FILE_EXTENSION = ".txt";
 	
 	// PRIVATE PROPERTIES
 
 	private StringBuilder runMessage;
-
-	private StringBuilder fileContent;
 	
 	private IProject project;
 
@@ -111,7 +80,9 @@ public class AnalysisManager {
 
 	private QaMethod qaMethod;
 
-	private int maxRecursionLevel;
+	private QaPreference qaPreference;
+	
+	private boolean invalid;
 
 	public AnalysisManager() {
 		project = null;
@@ -124,41 +95,48 @@ public class AnalysisManager {
 
 	public void run() {
 		Instant start = Instant.now();
-		loadPreferences();
+		initPreferences();
 		runMessage = new StringBuilder("");
-		fileContent = new StringBuilder("");
-		setMessages(true, DateTimeUtil.getNowFormatted());
-		handleProject();
-		handlePackage();
-		handleUnit();
-		handleType();
-		handleMethod();
-		handleCalles();
+		setMessages(DateTimeUtil.getNowFormatted());
+		process();
+		ReportHelper.processReport(qaMethod);
 		Instant finish = Instant.now();
 		long timeElapsed = Duration.between(start, finish).getSeconds();
-		setMessages(true, "\n\n", "DURATION IN SECONDS: ", String.valueOf(timeElapsed));
-		int numberOfMethods = qaMethod != null ? qaMethod.getNumberOfMethods() : 0;
-		setMessages(true, "\n\n", "NUMBER OF METHODS: ", String.valueOf(numberOfMethods));
-		setMessages(true, "\n\n", "MAX RECURSION LEVEL: ", String.valueOf(maxRecursionLevel));
-		setMethodsNamesInMessage();
-		writeToFile();
-		ReportHelper.processReport(qaMethod);
+		setMessages("DURATION IN SECONDS: ", String.valueOf(timeElapsed));
 	}
 	
 	public String getMessage() {
 		return runMessage != null ? runMessage.toString() : "Call method 'run' before get message.";
 	}
 	
-	private void loadPreferences() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		maxRecursionLevel = store.getInt(PreferenceConstants.P_MAX_RECURSION_LEVEL);
+	private void initPreferences() {
+		qaPreference = PreferenceHelper.initPreferences();
+		String message = PreferenceHelper.validate(qaPreference);
+		
+		if (StringUtils.isNotBlank(message)) {
+			invalid = true;
+			setMessages(message);
+		}
+	}
+	
+	private void process() {
+		if (invalid) {
+			return;
+		}
+		
+		handleProject();
+		handlePackage();
+		handleUnit();
+		handleType();
+		handleMethod();
+		handleCalles();
 	}
 	
 	private void handleProject() {
-		project = ProjectHelper.getProject(PROJECT_NAME);
+		project = ProjectHelper.getProject(qaPreference.getProjectName());
 		
 		if (project == null) {
-			setMessages(true, "\n\n", "Project '", PROJECT_NAME, WAS_NOT_FOUND);
+			setMessages("Project '", qaPreference.getProjectName(), WAS_NOT_FOUND);
 		}
 	}
 
@@ -170,7 +148,7 @@ public class AnalysisManager {
 		packageFragment = PackageHelper.getPackage(project, PACKAGE_NAME);
 
 		if (packageFragment == null) {
-			setMessages(true, "\n\n", "Package '", PACKAGE_NAME, WAS_NOT_FOUND);
+			setMessages("Package '", PACKAGE_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -182,7 +160,7 @@ public class AnalysisManager {
 		compilationUnit = UnitHelper.getUnit(packageFragment, UNIT_NAME);
 
 		if (compilationUnit == null) {
-			setMessages(true, "\n\n", "Compilation unit '", UNIT_NAME, WAS_NOT_FOUND);
+			setMessages("Compilation unit '", UNIT_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -194,7 +172,7 @@ public class AnalysisManager {
 		type = TypeHelper.getType(compilationUnit, TYPE_NAME);
 
 		if (type == null) {
-			setMessages(true, "\n\n", "Type '", TYPE_NAME, WAS_NOT_FOUND);
+			setMessages("Type '", TYPE_NAME, WAS_NOT_FOUND);
 		}
 	}
 
@@ -206,7 +184,7 @@ public class AnalysisManager {
 		method = MethodHelper.getMethod(type, METHOD_NAME, METHOD_SIGNATURE);
 
 		if (method == null) {
-			setMessages(true, "\n\n", "Method '", METHOD_NAME, "' with signature '", METHOD_SIGNATURE, WAS_NOT_FOUND);
+			setMessages("Method '", METHOD_NAME, "' with signature '", METHOD_SIGNATURE, WAS_NOT_FOUND);
 		}
 	}
 
@@ -215,30 +193,18 @@ public class AnalysisManager {
 			return;
 		}
 
-		qaMethod = MethodHelper.getCalleesOf(method, null, 1, MAIN_TYPE, NOT_QA_TYPES, maxRecursionLevel);
+		qaMethod = MethodHelper.getCalleesOf(method, null, 1, MAIN_TYPE, NOT_QA_TYPES, qaPreference.getMaxRecursionLevel());
 
 		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
-			setMessages(true, "\n\n", "Method '", METHOD_NAME, "' does not have callees.");
+			setMessages("Method '", METHOD_NAME, "' does not have callees.");
 		}
 	}
 
-	private void setMethodsNamesInMessage() {
-		if (qaMethod == null) {
-			return;
-		}
-
-		setMessages(false, "\n", qaMethod.toString());
-	}
-
-	private void writeToFile() {
-		String fullFileName = FILE_PATH + FILE_NAME + DateTimeUtil.getNowFormatted() + FILE_EXTENSION;
-		FileUtil.writeStringToFile(fullFileName, fileContent.toString());
-	}
-
-	private void setMessages(boolean addToMessage, String... args) {
+	private void setMessages(String... args) {
+		runMessage.append("\n");
+		
 		for (String str : args) {
-			runMessage.append(addToMessage ? str : "");
-			fileContent.append(str);
+			runMessage.append(str);
 		}
 	}
 }

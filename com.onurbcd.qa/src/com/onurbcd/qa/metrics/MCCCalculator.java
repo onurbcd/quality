@@ -20,8 +20,8 @@ import com.onurbcd.qa.util.StringUtil;
  * of test cases needed for achieving full branch test coverage. The value of
  * the metric is calculated as the number of the following instructions plus 1:
  * if, for, foreach, while, do-while, case label (which belongs to a switch
- * instruction), catch, conditional statement (?:). Moreover, logical “and” (&&)
- * and logical “or” (||) expressions also add 1 to the value because their
+ * instruction), catch, conditional statement (?:). Moreover, logical â€œandâ€� (&&)
+ * and logical â€œorâ€� (||) expressions also add 1 to the value because their
  * short-circuit evaluation can cause branching depending on the first operand.
  * The following instructions are not included: else, switch, default label
  * (which belongs to a switch instruction), try, finally.
@@ -36,7 +36,7 @@ public class MCCCalculator {
 	
 	private static final String OR = "||";
 	
-	private static final String LAMBDA_FOR_EACH = "||";
+	private static final String LAMBDA_FOR_EACH = ".forEach(";
 
 	private MCCCalculator() {
 	}

@@ -105,8 +105,8 @@ public class ReportHelper {
 	        	reportContent.append("    ").append(reportMethod.getSignature()).append("\n")
 	        	.append("        LOC: ").append(reportMethod.getLoc()).append("\n")
 	        	.append("        MCC: ").append(reportMethod.getMcc()).append("\n")
-	        	.append("   COVERAGE: ").append(reportMethod.getCoverage()).append("\n")
-	        	.append("      HORAS: ").append(reportMethod.getHours()).append("\n");
+	        	.append("        COVERAGE: ").append(reportMethod.getCoverage()).append("\n")
+	        	.append("        HORAS: ").append(reportMethod.getHours()).append("\n");
 	        	numberOfMethods++;
 			}
 	        

@@ -33,6 +33,8 @@ public class QaPreferencePage extends FieldEditorPreferencePage implements IWork
 	 * restore itself.
 	 */
 	public void createFieldEditors() {
+		addField(new StringFieldEditor(PreferenceConstants.P_PROJECT_NAME, "Project Name:", getFieldEditorParent()));
+		
 		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH, "&Directory preference:", getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.P_BOOLEAN, "&An example of a boolean preference", getFieldEditorParent()));
 		addField(new RadioGroupFieldEditor(PreferenceConstants.P_CHOICE, "An example of a multiple-choice preference", 1,

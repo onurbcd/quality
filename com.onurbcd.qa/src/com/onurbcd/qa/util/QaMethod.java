@@ -5,8 +5,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.IMethod;
 
-import com.onurbcd.qa.helper.MethodHelper;
-
 public class QaMethod {
 
 	private int level;
@@ -60,10 +58,6 @@ public class QaMethod {
 	public void addtoCallees(QaMethod qaMethod) {
 		callees.add(qaMethod);
 	}
-	
-	public int getNumberOfMethods() {
-		return 1 + callees.stream().reduce(0, (subtotal, element) -> subtotal + element.getNumberOfMethods(), Integer::sum);
-	}
 
 	public boolean isReincarnation(IMethod newMethod) {
 		if (parentMethod == null) {
@@ -75,22 +69,5 @@ public class QaMethod {
 		}
 		
 		return parentMethod.isReincarnation(newMethod);
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder
-		.append("\n")
-		.append(StringUtil.fill((level - 1) * 4, " "))
-		.append(level)
-		.append(" - ")
-		.append(MethodHelper.getMethodFullName(method));
-		
-		for (QaMethod qaMethod : callees) {
-			builder.append(qaMethod.toString());
-		}
-		
-		return builder.toString();
 	}
 }
