@@ -19,10 +19,12 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.P_PROJECT_NAME, StringUtils.EMPTY);
+		store.setDefault(PreferenceConstants.P_PACKAGE_NAME, StringUtils.EMPTY);
+		
+		store.setDefault(PreferenceConstants.P_MAX_RECURSION_LEVEL, 1);
 		
 		store.setDefault(PreferenceConstants.P_BOOLEAN, true);
 		store.setDefault(PreferenceConstants.P_CHOICE, "choice2");
 		store.setDefault(PreferenceConstants.P_STRING, "Default value");
-		store.setDefault(PreferenceConstants.P_MAX_RECURSION_LEVEL, 1);
 	}
 }

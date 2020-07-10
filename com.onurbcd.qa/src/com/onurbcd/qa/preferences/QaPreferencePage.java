@@ -34,15 +34,17 @@ public class QaPreferencePage extends FieldEditorPreferencePage implements IWork
 	 */
 	public void createFieldEditors() {
 		addField(new StringFieldEditor(PreferenceConstants.P_PROJECT_NAME, "Project Name:", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.P_PACKAGE_NAME, "Package Name:", getFieldEditorParent()));
+		
+		IntegerFieldEditor maxRecursionLevel = new IntegerFieldEditor(PreferenceConstants.P_MAX_RECURSION_LEVEL, "Max Recursion Level", getFieldEditorParent());
+		maxRecursionLevel.setValidRange(0, 99);
+		addField(maxRecursionLevel);
 		
 		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH, "&Directory preference:", getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.P_BOOLEAN, "&An example of a boolean preference", getFieldEditorParent()));
 		addField(new RadioGroupFieldEditor(PreferenceConstants.P_CHOICE, "An example of a multiple-choice preference", 1,
 			new String[][] { { "&Choice 1", "choice1" }, { "C&hoice 2", "choice2" } }, getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.P_STRING, "A &text preference:", getFieldEditorParent()));
-		IntegerFieldEditor maxRecursionLevel = new IntegerFieldEditor(PreferenceConstants.P_MAX_RECURSION_LEVEL, "Max Recursion Level", getFieldEditorParent());
-		maxRecursionLevel.setValidRange(0, 99);
-		addField(maxRecursionLevel);
 	}
 
 	/* (non-Javadoc)

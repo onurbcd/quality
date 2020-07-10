@@ -28,8 +28,6 @@ public class AnalysisManager {
 	
 	// PRIVATE STATIC PROPERTIES
 
-	private static final String PACKAGE_NAME = "br.com.engdb.geotec.quartz.job";
-
 	private static final String UNIT_NAME = "RealizarImportacaoEmLoteJob.java";
 
 	private static final String TYPE_NAME = "br.com.engdb.geotec.quartz.job.RealizarImportacaoEmLoteJob";
@@ -80,7 +78,7 @@ public class AnalysisManager {
 
 	private QaMethod qaMethod;
 
-	private QaPreference qaPreference;
+	private QaPreference preferences;
 	
 	private boolean invalid;
 
@@ -116,8 +114,8 @@ public class AnalysisManager {
 	}
 	
 	private void initPreferences() {
-		qaPreference = PreferenceHelper.initPreferences();
-		String message = PreferenceHelper.validate(qaPreference);
+		preferences = PreferenceHelper.initPreferences();
+		String message = PreferenceHelper.validate(preferences);
 		
 		if (StringUtils.isNotBlank(message)) {
 			invalid = true;
@@ -139,10 +137,10 @@ public class AnalysisManager {
 	}
 	
 	private void handleProject() {
-		project = ProjectHelper.getProject(qaPreference.getProjectName());
+		project = ProjectHelper.getProject(preferences.getProjectName());
 		
 		if (project == null) {
-			setMessages("Project '", qaPreference.getProjectName(), WAS_NOT_FOUND);
+			setMessages("Project '", preferences.getProjectName(), WAS_NOT_FOUND);
 		}
 	}
 
@@ -151,10 +149,10 @@ public class AnalysisManager {
 			return;
 		}
 
-		packageFragment = PackageHelper.getPackage(project, PACKAGE_NAME);
+		packageFragment = PackageHelper.getPackage(project, preferences.getPackageName());
 
 		if (packageFragment == null) {
-			setMessages("Package '", PACKAGE_NAME, WAS_NOT_FOUND);
+			setMessages("Package '", preferences.getPackageName(), WAS_NOT_FOUND);
 		}
 	}
 
@@ -199,7 +197,7 @@ public class AnalysisManager {
 			return;
 		}
 
-		qaMethod = MethodHelper.getCalleesOf(method, null, 1, MAIN_TYPE, NOT_QA_TYPES, qaPreference.getMaxRecursionLevel());
+		qaMethod = MethodHelper.getCalleesOf(method, null, 1, MAIN_TYPE, NOT_QA_TYPES, preferences.getMaxRecursionLevel());
 
 		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
 			setMessages("Method '", METHOD_NAME, "' does not have callees.");

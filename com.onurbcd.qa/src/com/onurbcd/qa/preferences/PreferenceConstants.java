@@ -15,8 +15,10 @@ public class PreferenceConstants {
 	public static final String P_CHOICE = "choicePreference";
 
 	public static final String P_STRING = "stringPreference";
-
-	public static final String P_MAX_RECURSION_LEVEL = "maxRecursionLevel";
 	
 	public static final String P_PROJECT_NAME = "projectName";
+	
+	public static final String P_PACKAGE_NAME = "packageName";
+	
+	public static final String P_MAX_RECURSION_LEVEL = "maxRecursionLevel";
 }

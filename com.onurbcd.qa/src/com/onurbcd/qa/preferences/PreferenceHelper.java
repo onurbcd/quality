@@ -15,6 +15,7 @@ public class PreferenceHelper {
 
 		return new QaPreference(
 				StringUtils.trim(store.getString(PreferenceConstants.P_PROJECT_NAME)),
+				StringUtils.trim(store.getString(PreferenceConstants.P_PACKAGE_NAME)),
 				store.getInt(PreferenceConstants.P_MAX_RECURSION_LEVEL)
 		);
 	}
@@ -26,6 +27,7 @@ public class PreferenceHelper {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append(StringUtils.isBlank(preferences.getProjectName()) ? "Project Name is required" : StringUtils.EMPTY);
+		sb.append(StringUtils.isBlank(preferences.getPackageName()) ? "Package Name is required" : StringUtils.EMPTY);
 		return sb.toString();
 	}
 }
