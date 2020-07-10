@@ -6,12 +6,15 @@ public class QaPreference {
 	
 	private String packageName;
 	
+	private String unitName;
+	
 	private int maxRecursionLevel;
 
-	public QaPreference(String projectName, String packageName, int maxRecursionLevel) {
+	public QaPreference(String projectName, String packageName, String unitName, int maxRecursionLevel) {
 		super();
 		this.projectName = projectName;
 		this.packageName = packageName;
+		this.unitName = unitName;
 		this.maxRecursionLevel = maxRecursionLevel;
 	}
 
@@ -30,6 +33,16 @@ public class QaPreference {
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+
 
 	public int getMaxRecursionLevel() {
 		return maxRecursionLevel;
