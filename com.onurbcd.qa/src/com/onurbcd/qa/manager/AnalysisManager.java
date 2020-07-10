@@ -84,20 +84,13 @@ public class AnalysisManager {
 	
 	private boolean invalid;
 
-	public AnalysisManager() {
-		project = null;
-		packageFragment = null;
-		compilationUnit = null;
-		type = null;
-		method = null;
-		qaMethod = null;
-	}
+	// PUBLIC METHODS
 
 	public void run() {
 		Instant start = Instant.now();
-		initPreferences();
-		runMessage = new StringBuilder("");
+		initVariables();
 		setMessages(DateTimeUtil.getNowFormatted());
+		initPreferences();
 		process();
 		ReportHelper.processReport(qaMethod);
 		Instant finish = Instant.now();
@@ -107,6 +100,19 @@ public class AnalysisManager {
 	
 	public String getMessage() {
 		return runMessage != null ? runMessage.toString() : "Call method 'run' before get message.";
+	}
+	
+	// PRIVATE METHODS
+	
+	private void initVariables() {
+		runMessage = new StringBuilder("");
+		project = null;
+		packageFragment = null;
+		compilationUnit = null;
+		type = null;
+		method = null;
+		qaMethod = null;
+		invalid = false;
 	}
 	
 	private void initPreferences() {
