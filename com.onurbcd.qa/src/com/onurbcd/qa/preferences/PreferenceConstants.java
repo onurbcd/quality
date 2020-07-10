@@ -25,4 +25,6 @@ public class PreferenceConstants {
 	public static final String P_UNIT_NAME = "unitName";
 	
 	public static final String P_TYPE_NAME = "typeName";
+	
+	public static final String P_METHOD_NAME = "methodName";
 }
