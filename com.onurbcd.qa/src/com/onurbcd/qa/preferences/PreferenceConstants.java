@@ -23,4 +23,6 @@ public class PreferenceConstants {
 	public static final String P_MAX_RECURSION_LEVEL = "maxRecursionLevel";
 	
 	public static final String P_UNIT_NAME = "unitName";
+	
+	public static final String P_TYPE_NAME = "typeName";
 }

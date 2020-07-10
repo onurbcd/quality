@@ -28,8 +28,6 @@ public class AnalysisManager {
 	
 	// PRIVATE STATIC PROPERTIES
 
-	private static final String TYPE_NAME = "br.com.engdb.geotec.quartz.job.RealizarImportacaoEmLoteJob";
-
 	private static final String METHOD_NAME = "executeMonitored";
 
 	private static final String METHOD_SIGNATURE = "(QJobExecutionContext;)V";
@@ -171,10 +169,10 @@ public class AnalysisManager {
 			return;
 		}
 
-		type = TypeHelper.getType(compilationUnit, TYPE_NAME);
+		type = TypeHelper.getType(compilationUnit, preferences.getTypeName());
 
 		if (type == null) {
-			setMessages("Type '", TYPE_NAME, WAS_NOT_FOUND);
+			setMessages("Type '", preferences.getTypeName(), WAS_NOT_FOUND);
 		}
 	}
 
