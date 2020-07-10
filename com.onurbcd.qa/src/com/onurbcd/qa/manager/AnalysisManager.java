@@ -28,8 +28,6 @@ public class AnalysisManager {
 	
 	// PRIVATE STATIC PROPERTIES
 
-	private static final String UNIT_NAME = "RealizarImportacaoEmLoteJob.java";
-
 	private static final String TYPE_NAME = "br.com.engdb.geotec.quartz.job.RealizarImportacaoEmLoteJob";
 
 	private static final String METHOD_NAME = "executeMonitored";
@@ -161,10 +159,10 @@ public class AnalysisManager {
 			return;
 		}
 
-		compilationUnit = UnitHelper.getUnit(packageFragment, UNIT_NAME);
+		compilationUnit = UnitHelper.getUnit(packageFragment, preferences.getUnitName());
 
 		if (compilationUnit == null) {
-			setMessages("Compilation unit '", UNIT_NAME, WAS_NOT_FOUND);
+			setMessages("Compilation unit '", preferences.getUnitName(), WAS_NOT_FOUND);
 		}
 	}
 
