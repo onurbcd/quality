@@ -28,8 +28,6 @@ public class AnalysisManager {
 	
 	// PRIVATE STATIC PROPERTIES
 
-	private static final String METHOD_SIGNATURE = "(QJobExecutionContext;)V";
-
 	private static final String MAIN_TYPE = "br.com.engdb.geotec";
 	
 	private static final Set<String> NOT_QA_TYPES = new HashSet<>(Arrays.asList(
@@ -179,10 +177,10 @@ public class AnalysisManager {
 			return;
 		}
 
-		method = MethodHelper.getMethod(type, preferences.getMethodName(), METHOD_SIGNATURE);
+		method = MethodHelper.getMethod(type, preferences.getMethodSignature());
 
 		if (method == null) {
-			setMessages("Method '", preferences.getMethodName(), "' with signature '", METHOD_SIGNATURE, WAS_NOT_FOUND);
+			setMessages("Method '", preferences.getMethodSignature(), WAS_NOT_FOUND);
 		}
 	}
 
@@ -194,7 +192,7 @@ public class AnalysisManager {
 		qaMethod = MethodHelper.getCalleesOf(method, null, 1, MAIN_TYPE, NOT_QA_TYPES, preferences.getMaxRecursionLevel());
 
 		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
-			setMessages("Method '", preferences.getMethodName(), "' does not have callees.");
+			setMessages("Method '", preferences.getMethodSignature(), "' does not have callees.");
 		}
 	}
 

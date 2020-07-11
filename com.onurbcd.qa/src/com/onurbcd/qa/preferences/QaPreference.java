@@ -10,19 +10,19 @@ public class QaPreference {
 	
 	private String typeName;
 	
-	private String methodName;
+	private String methodSignature;
 
 
 
 	private int maxRecursionLevel;
 
-	public QaPreference(String projectName, String packageName, String unitName, String typeName, String methodName, int maxRecursionLevel) {
+	public QaPreference(String projectName, String packageName, String unitName, String typeName, String methodSignature, int maxRecursionLevel) {
 		super();
 		this.projectName = projectName;
 		this.packageName = packageName;
 		this.unitName = unitName;
 		this.typeName = typeName;
-		this.methodName = methodName;
+		this.methodSignature = methodSignature;
 		
 		this.maxRecursionLevel = maxRecursionLevel;
 	}
@@ -59,12 +59,12 @@ public class QaPreference {
 		this.typeName = typeName;
 	}
 
-	public String getMethodName() {
-		return methodName;
+	public String getMethodSignature() {
+		return methodSignature;
 	}
 
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
+	public void setMethodSignature(String methodSignature) {
+		this.methodSignature = methodSignature;
 	}
 
 

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
@@ -26,8 +27,8 @@ public class MethodHelper {
 	private MethodHelper() {
 	}
 
-	public static IMethod getMethod(IType type, String methodName, String methodSignature) {
-		if (type == null || methodName == null || methodName.trim().isEmpty() || methodSignature == null || methodSignature.trim().isEmpty()) {
+	public static IMethod getMethod(IType type, String methodSignature) {
+		if (type == null || StringUtils.isBlank(methodSignature)) {
 			return null;
 		}
 
@@ -45,8 +46,7 @@ public class MethodHelper {
 
 		return Arrays
 				.stream(methods)
-				.filter(p -> p.getElementName().equals(methodName) &&
-						safeEquals(p, methodSignature))
+				.filter(p -> methodSignature.equals(getMethodFullName(p)))
 				.findFirst().orElse(null);
 	}
 
@@ -94,14 +94,6 @@ public class MethodHelper {
         }
 
         return name.toString();
-	}
-
-	private static boolean safeEquals(IMethod method, String methodSignature) {
-		try {
-			return method != null && method.getSignature().equals(methodSignature);
-		} catch (JavaModelException e) {
-			return false;
-		}
 	}
 
 	private static Set<IMethod> getCalleesMethods(IMethod method, String mainType, Set<String> notQaTypes) {
