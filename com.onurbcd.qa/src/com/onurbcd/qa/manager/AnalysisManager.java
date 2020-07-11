@@ -55,7 +55,7 @@ public class AnalysisManager {
 		setMessages(DateTimeUtil.getNowFormatted());
 		initPreferences();
 		process();
-		ReportHelper.processReport(qaMethod, prefs.getReportFilePath());
+		ReportHelper.processReport(qaMethod, prefs);
 		Instant finish = Instant.now();
 		long timeElapsed = Duration.between(start, finish).getSeconds();
 		setMessages("DURATION IN SECONDS: ", String.valueOf(timeElapsed));

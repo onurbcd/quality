@@ -24,7 +24,7 @@ public class QaPreferencePage extends FieldEditorPreferencePage implements IWork
 	public QaPreferencePage() {
 		super(GRID);
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
-		setDescription("A demonstration of a preference page implementation");
+		setDescription("Quality Analysis Preferences");
 	}
 
 	/**
@@ -45,6 +45,7 @@ public class QaPreferencePage extends FieldEditorPreferencePage implements IWork
 		maxRecursionLevel.setValidRange(0, 99);
 		addField(maxRecursionLevel);
 		addField(new DirectoryFieldEditor(PreferenceConstants.P_REPORT_FILE_PATH, "Report File Path:", getFieldEditorParent()));
+		addField(new FileFieldEditor(PreferenceConstants.P_JUNIT_COVERAGE_REPORT, "Junit Coverage Report:", getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)

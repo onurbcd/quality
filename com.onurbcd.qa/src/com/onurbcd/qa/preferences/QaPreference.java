@@ -25,6 +25,8 @@ public class QaPreference {
 	private int maxRecursionLevel;
 	
 	private String reportFilePath;
+	
+	private String junitCoverageReport;
 
 	public QaPreference(String projectName, String packageName, String unitName, String typeName, String methodSignature, String mainType, String notQaTypes) {
 		super();
@@ -37,9 +39,10 @@ public class QaPreference {
 		this.notQaTypes = StringUtils.isNotBlank(notQaTypes) ? Arrays.asList(StringUtils.splitPreserveAllTokens(notQaTypes, PreferenceConstants.SEPARATOR)) : Collections.emptyList();
 	}
 	
-	public QaPreference init(int maxRecursionLevel, String reportFilePath) {
+	public QaPreference init(int maxRecursionLevel, String reportFilePath, String junitCoverageReport) {
 		this.maxRecursionLevel = maxRecursionLevel;
 		this.reportFilePath = reportFilePath;
+		this.junitCoverageReport = junitCoverageReport;
 		return this;
 	}
 
@@ -113,5 +116,13 @@ public class QaPreference {
 
 	public void setReportFilePath(String reportFilePath) {
 		this.reportFilePath = reportFilePath;
+	}
+
+	public String getJunitCoverageReport() {
+		return junitCoverageReport;
+	}
+
+	public void setJunitCoverageReport(String junitCoverageReport) {
+		this.junitCoverageReport = junitCoverageReport;
 	}
 }

@@ -22,7 +22,8 @@ public class PreferenceHelper {
 				StringUtils.trim(store.getString(PreferenceConstants.P_MAIN_TYPE)),
 				StringUtils.trim(store.getString(PreferenceConstants.P_NOT_QA_TYPES)))
 				.init(store.getInt(PreferenceConstants.P_MAX_RECURSION_LEVEL),
-						StringUtils.trim(store.getString(PreferenceConstants.P_REPORT_FILE_PATH)));
+						StringUtils.trim(store.getString(PreferenceConstants.P_REPORT_FILE_PATH)),
+						StringUtils.trim(store.getString(PreferenceConstants.P_JUNIT_COVERAGE_REPORT)));
 	}
 	
 	public static String validate(QaPreference preferences) {
@@ -38,6 +39,7 @@ public class PreferenceHelper {
 		sb.append(StringUtils.isBlank(preferences.getMethodSignature()) ? "Method Signature is required" : StringUtils.EMPTY);
 		sb.append(StringUtils.isBlank(preferences.getMainType()) ? "Main Type is required" : StringUtils.EMPTY);
 		sb.append(StringUtils.isBlank(preferences.getReportFilePath()) ? "Report File Path is required" : StringUtils.EMPTY);
+		sb.append(StringUtils.isBlank(preferences.getJunitCoverageReport()) ? "Junit Coverage Report is required" : StringUtils.EMPTY);
 		return sb.toString();
 	}
 }

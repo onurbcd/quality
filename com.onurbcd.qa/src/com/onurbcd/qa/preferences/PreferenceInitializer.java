@@ -27,5 +27,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.P_NOT_QA_TYPES, StringUtils.EMPTY);
 		store.setDefault(PreferenceConstants.P_MAX_RECURSION_LEVEL, 1);
 		store.setDefault(PreferenceConstants.P_REPORT_FILE_PATH, StringUtils.EMPTY);
+		store.setDefault(PreferenceConstants.P_JUNIT_COVERAGE_REPORT, StringUtils.EMPTY);
 	}
 }

@@ -27,4 +27,6 @@ public class PreferenceConstants {
 	public static final String P_MAX_RECURSION_LEVEL = "maxRecursionLevel";
 	
 	public static final String P_REPORT_FILE_PATH = "reportFilePath";
+	
+	public static final String P_JUNIT_COVERAGE_REPORT = "junitCoverageReport";
 }

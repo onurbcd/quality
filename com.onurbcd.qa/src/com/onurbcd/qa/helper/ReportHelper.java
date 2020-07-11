@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import com.onurbcd.qa.metrics.LOCCalculator;
 import com.onurbcd.qa.metrics.LOCResult;
 import com.onurbcd.qa.metrics.MCCCalculator;
+import com.onurbcd.qa.preferences.QaPreference;
 import com.onurbcd.qa.util.DateTimeUtil;
 import com.onurbcd.qa.util.FileUtil;
 import com.onurbcd.qa.util.QaMethod;
@@ -24,23 +25,21 @@ public class ReportHelper {
 	private static final String REPORT_FILE_NAME = "qa-analysis-report-";
 	
 	private static final String REPORT_FILE_EXTENSION = ".txt";
-	
-	private static final String JUNIT_COVERAGE_REPORT = "C:\\Users\\bmiguellei\\Desktop\\geotec-test-coverage.xml";
 
 	private ReportHelper() {
 	}
 	
-	public static void processReport(QaMethod qaMethod, String filePath) {
-		if (qaMethod == null || StringUtils.isBlank(filePath)) {
+	public static void processReport(QaMethod qaMethod, QaPreference prefs) {
+		if (qaMethod == null || prefs == null || StringUtils.isBlank(prefs.getReportFilePath())) {
 			return;
 		}
-		
+
 		Map<String, List<ReportMethod>> reports = new LinkedHashMap<>();
-		String xml = FileUtil.getJunitCoverageReport(JUNIT_COVERAGE_REPORT);
+		String xml = FileUtil.getJunitCoverageReport(prefs.getJunitCoverageReport());
 		processQaMethod(reports, qaMethod, xml);
-		generateReport(reports, filePath);
+		generateReport(reports, prefs);
 	}
-	
+
 	private static void processQaMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod, String xml) {
 		addReportMethod(reports, qaMethod, xml);
 		
@@ -92,7 +91,7 @@ public class ReportHelper {
 		}
 	}
 	
-	private static void generateReport(Map<String, List<ReportMethod>> reports, String filePath) {
+	private static void generateReport(Map<String, List<ReportMethod>> reports, QaPreference prefs) {
 		StringBuilder reportContent = new StringBuilder();
 		int numberOfMethods = 0;
 		double totalHours = 0;
@@ -118,7 +117,7 @@ public class ReportHelper {
 		}
 		
 		String header = "TOTAL HOURS: " + totalHours +  "\nNUMBER OF METHODS: " + numberOfMethods + "\n\n";
-		String fullFileName = filePath + SEPARATOR + REPORT_FILE_NAME + DateTimeUtil.getNowFormatted() + REPORT_FILE_EXTENSION;
+		String fullFileName = prefs.getReportFilePath() + SEPARATOR + REPORT_FILE_NAME + DateTimeUtil.getNowFormatted() + REPORT_FILE_EXTENSION;
 		FileUtil.writeStringToFile(fullFileName, header + reportContent.toString());
 	}
 }
