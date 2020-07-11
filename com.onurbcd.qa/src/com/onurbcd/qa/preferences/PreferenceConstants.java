@@ -26,6 +26,8 @@ public class PreferenceConstants {
 	public static final String P_TYPE_NAME = "typeName";
 	
 	public static final String P_METHOD_SIGNATURE = "methodSignature";
+	
+	public static final String P_MAIN_TYPE = "mainType";
 
 
 	public static final String P_MAX_RECURSION_LEVEL = "maxRecursionLevel";

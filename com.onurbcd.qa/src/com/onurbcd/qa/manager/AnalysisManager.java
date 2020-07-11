@@ -27,8 +27,6 @@ import com.onurbcd.qa.util.QaMethod;
 public class AnalysisManager {
 	
 	// PRIVATE STATIC PROPERTIES
-
-	private static final String MAIN_TYPE = "br.com.engdb.geotec";
 	
 	private static final Set<String> NOT_QA_TYPES = new HashSet<>(Arrays.asList(
 			"br.com.engdb.geotec.async",
@@ -189,7 +187,7 @@ public class AnalysisManager {
 			return;
 		}
 
-		qaMethod = MethodHelper.getCalleesOf(method, null, 1, MAIN_TYPE, NOT_QA_TYPES, preferences.getMaxRecursionLevel());
+		qaMethod = MethodHelper.getCalleesOf(method, null, 1, preferences.getMainType(), NOT_QA_TYPES, preferences.getMaxRecursionLevel());
 
 		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
 			setMessages("Method '", preferences.getMethodSignature(), "' does not have callees.");

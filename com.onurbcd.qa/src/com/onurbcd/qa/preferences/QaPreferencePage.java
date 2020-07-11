@@ -38,6 +38,7 @@ public class QaPreferencePage extends FieldEditorPreferencePage implements IWork
 		addField(new StringFieldEditor(PreferenceConstants.P_UNIT_NAME, "Unit Name:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.P_TYPE_NAME, "Type Name:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.P_METHOD_SIGNATURE, "Method Signature:", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.P_MAIN_TYPE, "Main Type:", getFieldEditorParent()));
 		
 		IntegerFieldEditor maxRecursionLevel = new IntegerFieldEditor(PreferenceConstants.P_MAX_RECURSION_LEVEL, "Max Recursion Level", getFieldEditorParent());
 		maxRecursionLevel.setValidRange(0, 99);
