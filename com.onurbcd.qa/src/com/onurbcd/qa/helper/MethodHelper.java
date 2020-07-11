@@ -2,6 +2,7 @@ package com.onurbcd.qa.helper;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +51,7 @@ public class MethodHelper {
 				.findFirst().orElse(null);
 	}
 
-	public static QaMethod getCalleesOf(IMethod method, QaMethod parentMethod, int level, String mainType, Set<String> notQaTypes, int maxRecursionLevel) {
+	public static QaMethod getCalleesOf(IMethod method, QaMethod parentMethod, int level, String mainType, List<String> notQaTypes, int maxRecursionLevel) {
 		QaMethod qaMethod = new QaMethod(level, method, parentMethod);
 		
 		if (level > maxRecursionLevel) {
@@ -96,7 +97,7 @@ public class MethodHelper {
         return name.toString();
 	}
 
-	private static Set<IMethod> getCalleesMethods(IMethod method, String mainType, Set<String> notQaTypes) {
+	private static Set<IMethod> getCalleesMethods(IMethod method, String mainType, List<String> notQaTypes) {
 		CallHierarchy callHierarchy = CallHierarchy.getDefault();
 		IMember[] members = {method};
 		MethodWrapper[] methodWrappers = callHierarchy.getCalleeRoots(members);
@@ -118,7 +119,7 @@ public class MethodHelper {
 		return new LinkedHashSet<>();
 	}
 
-	private static Set<IMethod> getIMethods(MethodWrapper[] methodWrappers, IMethod parentMethod, String mainType, Set<String> notQaTypes) {
+	private static Set<IMethod> getIMethods(MethodWrapper[] methodWrappers, IMethod parentMethod, String mainType, List<String> notQaTypes) {
 		Set<IMethod> methods = new LinkedHashSet<>();
 
 		for (MethodWrapper methodWrapper : methodWrappers) {

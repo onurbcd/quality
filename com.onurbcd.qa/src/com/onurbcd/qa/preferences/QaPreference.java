@@ -1,5 +1,11 @@
 package com.onurbcd.qa.preferences;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 public class QaPreference {
 
 	private String projectName;
@@ -14,11 +20,11 @@ public class QaPreference {
 	
 	private String mainType;
 
-
+	private List<String> notQaTypes;
 
 	private int maxRecursionLevel;
 
-	public QaPreference(String projectName, String packageName, String unitName, String typeName, String methodSignature, String mainType, int maxRecursionLevel) {
+	public QaPreference(String projectName, String packageName, String unitName, String typeName, String methodSignature, String mainType, String notQaTypes, int maxRecursionLevel) {
 		super();
 		this.projectName = projectName;
 		this.packageName = packageName;
@@ -26,7 +32,7 @@ public class QaPreference {
 		this.typeName = typeName;
 		this.methodSignature = methodSignature;
 		this.mainType = mainType;
-		
+		this.notQaTypes = StringUtils.isNotBlank(notQaTypes) ? Arrays.asList(StringUtils.splitPreserveAllTokens(notQaTypes, ",")) : Collections.emptyList();
 		this.maxRecursionLevel = maxRecursionLevel;
 	}
 
@@ -78,7 +84,13 @@ public class QaPreference {
 		this.mainType = mainType;
 	}
 
+	public List<String> getNotQaTypes() {
+		return notQaTypes;
+	}
 
+	public void setNotQaTypes(List<String> notQaTypes) {
+		this.notQaTypes = notQaTypes;
+	}
 
 	public int getMaxRecursionLevel() {
 		return maxRecursionLevel;

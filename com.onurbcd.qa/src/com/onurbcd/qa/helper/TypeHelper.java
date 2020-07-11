@@ -1,7 +1,7 @@
 package com.onurbcd.qa.helper;
 
 import java.util.Arrays;
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
@@ -32,7 +32,7 @@ public class TypeHelper {
 		return Arrays.stream(types).filter(p -> p.getFullyQualifiedName().equals(typeName)).findFirst().orElse(null);
 	}
 
-	public static boolean isQaType(IType type, String mainType, Set<String> notQaTypes) {
+	public static boolean isQaType(IType type, String mainType, List<String> notQaTypes) {
 		if (type == null || type.getFullyQualifiedName() == null || type.getFullyQualifiedName().trim().isEmpty()
 				|| mainType == null || mainType.trim().isEmpty()
 				|| !type.getFullyQualifiedName().startsWith(mainType)) {

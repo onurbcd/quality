@@ -15,4 +15,5 @@ Automatic-Module-Name: com.onurbcd.qa
 Bundle-ActivationPolicy: lazy
 Import-Package: com.fasterxml.jackson.databind,
  com.fasterxml.jackson.dataformat.xml,
+ com.google.common.base,
  org.apache.commons.lang3;version="3.8.1"

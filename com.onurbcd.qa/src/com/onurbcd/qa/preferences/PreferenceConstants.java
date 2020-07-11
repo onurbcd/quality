@@ -7,6 +7,9 @@ public class PreferenceConstants {
 
 	private PreferenceConstants() {
 	}
+	
+	public static final char SEPARATOR = ',';
+
 
 	public static final String P_PATH = "pathPreference";
 
@@ -29,6 +32,7 @@ public class PreferenceConstants {
 	
 	public static final String P_MAIN_TYPE = "mainType";
 
+	public static final String P_NOT_QA_TYPES = "notQaTypes";
 
 	public static final String P_MAX_RECURSION_LEVEL = "maxRecursionLevel";
 }

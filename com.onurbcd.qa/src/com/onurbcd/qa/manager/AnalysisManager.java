@@ -2,9 +2,6 @@ package com.onurbcd.qa.manager;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
@@ -27,28 +24,6 @@ import com.onurbcd.qa.util.QaMethod;
 public class AnalysisManager {
 	
 	// PRIVATE STATIC PROPERTIES
-	
-	private static final Set<String> NOT_QA_TYPES = new HashSet<>(Arrays.asList(
-			"br.com.engdb.geotec.async",
-			"br.com.engdb.geotec.config",
-			"br.com.engdb.geotec.domain",
-			"br.com.engdb.geotec.dto",
-			"br.com.engdb.geotec.enums",
-			"br.com.engdb.geotec.exception",
-			"br.com.engdb.geotec.interfaces",
-			"br.com.engdb.geotec.report.dto",
-			"br.com.engdb.geotec.ionic.v1.dto",
-			"br.com.engdb.geotec.repository",
-			"br.com.engdb.geotec.web.exception",
-			"br.com.engdb.geotec.web.rest.dto",
-			"br.com.engdb.geotec.web.rest.errors",
-			"br.com.engdb.geotec.web.rest.grg.dto",
-			"br.com.engdb.geotec.web.rest.mapper",
-			"br.com.engdb.geotec.web.rest.pims.dto",
-			"br.com.engdb.geotec.web.rest.vm",
-			"br.com.engdb.geotec.web.soap.grg.dto",
-			"br.com.engdb.geotec.web.soap.pims.entity"
-			));
 
 	private static final String WAS_NOT_FOUND = "' was not found.";
 	
@@ -187,7 +162,7 @@ public class AnalysisManager {
 			return;
 		}
 
-		qaMethod = MethodHelper.getCalleesOf(method, null, 1, preferences.getMainType(), NOT_QA_TYPES, preferences.getMaxRecursionLevel());
+		qaMethod = MethodHelper.getCalleesOf(method, null, 1, preferences.getMainType(), preferences.getNotQaTypes(), preferences.getMaxRecursionLevel());
 
 		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
 			setMessages("Method '", preferences.getMethodSignature(), "' does not have callees.");

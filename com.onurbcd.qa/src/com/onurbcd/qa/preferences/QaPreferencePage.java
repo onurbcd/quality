@@ -3,6 +3,7 @@ package com.onurbcd.qa.preferences;
 import org.eclipse.jface.preference.*;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.IWorkbench;
+
 import com.onurbcd.qa.Activator;
 
 /**
@@ -39,7 +40,7 @@ public class QaPreferencePage extends FieldEditorPreferencePage implements IWork
 		addField(new StringFieldEditor(PreferenceConstants.P_TYPE_NAME, "Type Name:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.P_METHOD_SIGNATURE, "Method Signature:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.P_MAIN_TYPE, "Main Type:", getFieldEditorParent()));
-		
+		addField(new QaListEditor(PreferenceConstants.P_NOT_QA_TYPES, "Not QA Types:", getFieldEditorParent()));
 		IntegerFieldEditor maxRecursionLevel = new IntegerFieldEditor(PreferenceConstants.P_MAX_RECURSION_LEVEL, "Max Recursion Level", getFieldEditorParent());
 		maxRecursionLevel.setValidRange(0, 99);
 		addField(maxRecursionLevel);

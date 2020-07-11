@@ -20,6 +20,7 @@ public class PreferenceHelper {
 				StringUtils.trim(store.getString(PreferenceConstants.P_TYPE_NAME)),
 				StringUtils.trim(store.getString(PreferenceConstants.P_METHOD_SIGNATURE)),
 				StringUtils.trim(store.getString(PreferenceConstants.P_MAIN_TYPE)),
+				StringUtils.trim(store.getString(PreferenceConstants.P_NOT_QA_TYPES)),
 				store.getInt(PreferenceConstants.P_MAX_RECURSION_LEVEL)
 		);
 	}

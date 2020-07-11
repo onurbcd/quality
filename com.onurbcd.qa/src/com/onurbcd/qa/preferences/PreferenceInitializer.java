@@ -24,7 +24,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.P_TYPE_NAME, StringUtils.EMPTY);
 		store.setDefault(PreferenceConstants.P_METHOD_SIGNATURE, StringUtils.EMPTY);
 		store.setDefault(PreferenceConstants.P_MAIN_TYPE, StringUtils.EMPTY);
-		
+		store.setDefault(PreferenceConstants.P_NOT_QA_TYPES, StringUtils.EMPTY);
 		store.setDefault(PreferenceConstants.P_MAX_RECURSION_LEVEL, 1);
 		
 		store.setDefault(PreferenceConstants.P_BOOLEAN, true);
