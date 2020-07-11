@@ -1,0 +1,4 @@
+- Validar os caminhos dos arquivos e a criação do arquivo de relatório
+- Criar enums para os valores estáticos
+- Criar arquivo de i18n para as mensagens e strings
+- Corrigir o bug do junit helper, quando os métodos têm o mesmo nome

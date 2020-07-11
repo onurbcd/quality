@@ -1,10 +1,13 @@
 package com.onurbcd.qa.helper;
 
+import static org.eclipse.core.runtime.Path.SEPARATOR;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 
@@ -18,8 +21,6 @@ import com.onurbcd.qa.util.ReportMethod;
 
 public class ReportHelper {
 	
-	private static final String REPORT_FILE_PATH = "C:\\Users\\bmiguellei\\Desktop\\";
-	
 	private static final String REPORT_FILE_NAME = "qa-analysis-report-";
 	
 	private static final String REPORT_FILE_EXTENSION = ".txt";
@@ -29,15 +30,15 @@ public class ReportHelper {
 	private ReportHelper() {
 	}
 	
-	public static void processReport(QaMethod qaMethod) {
-		if (qaMethod == null) {
+	public static void processReport(QaMethod qaMethod, String filePath) {
+		if (qaMethod == null || StringUtils.isBlank(filePath)) {
 			return;
 		}
 		
 		Map<String, List<ReportMethod>> reports = new LinkedHashMap<>();
 		String xml = FileUtil.getJunitCoverageReport(JUNIT_COVERAGE_REPORT);
 		processQaMethod(reports, qaMethod, xml);
-		generateReport(reports);
+		generateReport(reports, filePath);
 	}
 	
 	private static void processQaMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod, String xml) {
@@ -87,11 +88,11 @@ public class ReportHelper {
 		try {
 			return method.getSource();
 		} catch (JavaModelException e) {
-			return "";
+			return StringUtils.EMPTY;
 		}
 	}
 	
-	private static void generateReport(Map<String, List<ReportMethod>> reports) {
+	private static void generateReport(Map<String, List<ReportMethod>> reports, String filePath) {
 		StringBuilder reportContent = new StringBuilder();
 		int numberOfMethods = 0;
 		double totalHours = 0;
@@ -101,7 +102,6 @@ public class ReportHelper {
 	        
 	        for (ReportMethod reportMethod : entry.getValue()) {
 	        	totalHours += reportMethod.getHours();
-	        	
 	        	reportContent.append("    ").append(reportMethod.getSignature()).append("\n")
 	        	.append("        LOC: ").append(reportMethod.getLoc()).append("\n")
 	        	.append("        MCC: ").append(reportMethod.getMcc()).append("\n")
@@ -118,7 +118,7 @@ public class ReportHelper {
 		}
 		
 		String header = "TOTAL HOURS: " + totalHours +  "\nNUMBER OF METHODS: " + numberOfMethods + "\n\n";
-		String fullFileName = REPORT_FILE_PATH + REPORT_FILE_NAME + DateTimeUtil.getNowFormatted() + REPORT_FILE_EXTENSION;
+		String fullFileName = filePath + SEPARATOR + REPORT_FILE_NAME + DateTimeUtil.getNowFormatted() + REPORT_FILE_EXTENSION;
 		FileUtil.writeStringToFile(fullFileName, header + reportContent.toString());
 	}
 }

@@ -43,7 +43,7 @@ public class AnalysisManager {
 
 	private QaMethod qaMethod;
 
-	private QaPreference preferences;
+	private QaPreference prefs;
 	
 	private boolean invalid;
 
@@ -55,7 +55,7 @@ public class AnalysisManager {
 		setMessages(DateTimeUtil.getNowFormatted());
 		initPreferences();
 		process();
-		ReportHelper.processReport(qaMethod);
+		ReportHelper.processReport(qaMethod, prefs.getReportFilePath());
 		Instant finish = Instant.now();
 		long timeElapsed = Duration.between(start, finish).getSeconds();
 		setMessages("DURATION IN SECONDS: ", String.valueOf(timeElapsed));
@@ -79,8 +79,8 @@ public class AnalysisManager {
 	}
 	
 	private void initPreferences() {
-		preferences = PreferenceHelper.initPreferences();
-		String message = PreferenceHelper.validate(preferences);
+		prefs = PreferenceHelper.initPreferences();
+		String message = PreferenceHelper.validate(prefs);
 		
 		if (StringUtils.isNotBlank(message)) {
 			invalid = true;
@@ -102,10 +102,10 @@ public class AnalysisManager {
 	}
 	
 	private void handleProject() {
-		project = ProjectHelper.getProject(preferences.getProjectName());
+		project = ProjectHelper.getProject(prefs.getProjectName());
 		
 		if (project == null) {
-			setMessages("Project '", preferences.getProjectName(), WAS_NOT_FOUND);
+			setMessages("Project '", prefs.getProjectName(), WAS_NOT_FOUND);
 		}
 	}
 
@@ -114,10 +114,10 @@ public class AnalysisManager {
 			return;
 		}
 
-		packageFragment = PackageHelper.getPackage(project, preferences.getPackageName());
+		packageFragment = PackageHelper.getPackage(project, prefs.getPackageName());
 
 		if (packageFragment == null) {
-			setMessages("Package '", preferences.getPackageName(), WAS_NOT_FOUND);
+			setMessages("Package '", prefs.getPackageName(), WAS_NOT_FOUND);
 		}
 	}
 
@@ -126,10 +126,10 @@ public class AnalysisManager {
 			return;
 		}
 
-		compilationUnit = UnitHelper.getUnit(packageFragment, preferences.getUnitName());
+		compilationUnit = UnitHelper.getUnit(packageFragment, prefs.getUnitName());
 
 		if (compilationUnit == null) {
-			setMessages("Compilation unit '", preferences.getUnitName(), WAS_NOT_FOUND);
+			setMessages("Compilation unit '", prefs.getUnitName(), WAS_NOT_FOUND);
 		}
 	}
 
@@ -138,10 +138,10 @@ public class AnalysisManager {
 			return;
 		}
 
-		type = TypeHelper.getType(compilationUnit, preferences.getTypeName());
+		type = TypeHelper.getType(compilationUnit, prefs.getTypeName());
 
 		if (type == null) {
-			setMessages("Type '", preferences.getTypeName(), WAS_NOT_FOUND);
+			setMessages("Type '", prefs.getTypeName(), WAS_NOT_FOUND);
 		}
 	}
 
@@ -150,10 +150,10 @@ public class AnalysisManager {
 			return;
 		}
 
-		method = MethodHelper.getMethod(type, preferences.getMethodSignature());
+		method = MethodHelper.getMethod(type, prefs.getMethodSignature());
 
 		if (method == null) {
-			setMessages("Method '", preferences.getMethodSignature(), WAS_NOT_FOUND);
+			setMessages("Method '", prefs.getMethodSignature(), WAS_NOT_FOUND);
 		}
 	}
 
@@ -162,10 +162,10 @@ public class AnalysisManager {
 			return;
 		}
 
-		qaMethod = MethodHelper.getCalleesOf(method, null, 1, preferences.getMainType(), preferences.getNotQaTypes(), preferences.getMaxRecursionLevel());
+		qaMethod = MethodHelper.getCalleesOf(method, null, 1, prefs.getMainType(), prefs.getNotQaTypes(), prefs.getMaxRecursionLevel());
 
 		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
-			setMessages("Method '", preferences.getMethodSignature(), "' does not have callees.");
+			setMessages("Method '", prefs.getMethodSignature(), "' does not have callees.");
 		}
 	}
 

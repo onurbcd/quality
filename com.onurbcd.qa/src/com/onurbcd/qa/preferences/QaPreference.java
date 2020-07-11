@@ -23,8 +23,10 @@ public class QaPreference {
 	private List<String> notQaTypes;
 
 	private int maxRecursionLevel;
+	
+	private String reportFilePath;
 
-	public QaPreference(String projectName, String packageName, String unitName, String typeName, String methodSignature, String mainType, String notQaTypes, int maxRecursionLevel) {
+	public QaPreference(String projectName, String packageName, String unitName, String typeName, String methodSignature, String mainType, String notQaTypes) {
 		super();
 		this.projectName = projectName;
 		this.packageName = packageName;
@@ -32,8 +34,13 @@ public class QaPreference {
 		this.typeName = typeName;
 		this.methodSignature = methodSignature;
 		this.mainType = mainType;
-		this.notQaTypes = StringUtils.isNotBlank(notQaTypes) ? Arrays.asList(StringUtils.splitPreserveAllTokens(notQaTypes, ",")) : Collections.emptyList();
+		this.notQaTypes = StringUtils.isNotBlank(notQaTypes) ? Arrays.asList(StringUtils.splitPreserveAllTokens(notQaTypes, PreferenceConstants.SEPARATOR)) : Collections.emptyList();
+	}
+	
+	public QaPreference init(int maxRecursionLevel, String reportFilePath) {
 		this.maxRecursionLevel = maxRecursionLevel;
+		this.reportFilePath = reportFilePath;
+		return this;
 	}
 
 	public String getProjectName() {
@@ -98,5 +105,13 @@ public class QaPreference {
 
 	public void setMaxRecursionLevel(int maxRecursionLevel) {
 		this.maxRecursionLevel = maxRecursionLevel;
+	}
+
+	public String getReportFilePath() {
+		return reportFilePath;
+	}
+
+	public void setReportFilePath(String reportFilePath) {
+		this.reportFilePath = reportFilePath;
 	}
 }
