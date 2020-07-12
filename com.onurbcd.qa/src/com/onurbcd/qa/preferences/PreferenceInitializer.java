@@ -6,16 +6,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.onurbcd.qa.Activator;
 
-/**
- * Class used to initialize default preference values.
- */
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
-	 */
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.P_PROJECT_NAME, StringUtils.EMPTY);
@@ -28,5 +20,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.P_MAX_RECURSION_LEVEL, 1);
 		store.setDefault(PreferenceConstants.P_REPORT_FILE_PATH, StringUtils.EMPTY);
 		store.setDefault(PreferenceConstants.P_JUNIT_COVERAGE_REPORT, StringUtils.EMPTY);
+		store.setDefault(PreferenceConstants.P_MIN_PERCENT_RATE, 1);
 	}
 }

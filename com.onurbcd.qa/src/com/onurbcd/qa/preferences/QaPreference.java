@@ -27,6 +27,8 @@ public class QaPreference {
 	private String reportFilePath;
 	
 	private String junitCoverageReport;
+	
+	private double minPercentRate;
 
 	public QaPreference(String projectName, String packageName, String unitName, String typeName, String methodSignature, String mainType, String notQaTypes) {
 		super();
@@ -39,10 +41,11 @@ public class QaPreference {
 		this.notQaTypes = StringUtils.isNotBlank(notQaTypes) ? Arrays.asList(StringUtils.splitPreserveAllTokens(notQaTypes, PreferenceConstants.SEPARATOR)) : Collections.emptyList();
 	}
 	
-	public QaPreference init(int maxRecursionLevel, String reportFilePath, String junitCoverageReport) {
+	public QaPreference init(int maxRecursionLevel, String reportFilePath, String junitCoverageReport, int minPercentRate) {
 		this.maxRecursionLevel = maxRecursionLevel;
 		this.reportFilePath = reportFilePath;
 		this.junitCoverageReport = junitCoverageReport;
+		this.minPercentRate = minPercentRate / 100.0;
 		return this;
 	}
 
@@ -124,5 +127,13 @@ public class QaPreference {
 
 	public void setJunitCoverageReport(String junitCoverageReport) {
 		this.junitCoverageReport = junitCoverageReport;
+	}
+
+	public double getMinPercentRate() {
+		return minPercentRate;
+	}
+
+	public void setMinPercentRate(double minPercentRate) {
+		this.minPercentRate = minPercentRate;
 	}
 }

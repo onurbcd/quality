@@ -36,46 +36,48 @@ public class ReportHelper {
 
 		Map<String, List<ReportMethod>> reports = new LinkedHashMap<>();
 		String xml = FileUtil.getJunitCoverageReport(prefs.getJunitCoverageReport());
-		processQaMethod(reports, qaMethod, xml);
+		processQaMethod(reports, qaMethod, xml, prefs.getMinPercentRate());
 		generateReport(reports, prefs);
 	}
 
-	private static void processQaMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod, String xml) {
-		addReportMethod(reports, qaMethod, xml);
+	private static void processQaMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod, String xml, double minPercentRate) {
+		addReportMethod(reports, qaMethod, xml, minPercentRate);
 		
 		if (qaMethod.getCallees() == null || qaMethod.getCallees().isEmpty()) {
 			return;
 		}
 		
 		for (QaMethod calleeQaMethod : qaMethod.getCallees()) {
-			processQaMethod(reports, calleeQaMethod, xml);
+			processQaMethod(reports, calleeQaMethod, xml, minPercentRate);
 		}
 	}
 	
-	private static void addReportMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod, String xml) {
+	private static void addReportMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod, String xml, double minPercentRate) {
 		String className = qaMethod.getMethod().getDeclaringType().getFullyQualifiedName();
 		String signature = MethodHelper.getMethodFullName(qaMethod.getMethod());
-		String source = getSourceSafe(qaMethod.getMethod());
-		ReportMethod reportMethod = new ReportMethod(className, signature);
 		
 		if (reports.containsKey(className)) {
 			if (reports.get(className).stream().noneMatch(rm -> rm.getSignature().equals(signature))) {
-				double coverage = JunitHelper.processCoverageReport(xml, className, qaMethod.getMethod().getElementName());
-				
-				if (coverage < 0.6) {
-					LOCResult locResult = LOCCalculator.calculate(source);
-					int mcc = MCCCalculator.calculate(source, locResult.getSourceCode());
-					reportMethod.setMetrics(locResult.getCount(), mcc, coverage);
-					reports.get(className).add(reportMethod);
-				}
+				addToReport(xml, className, qaMethod, minPercentRate, signature, reports, true);
 			}
 		} else {
-			double coverage = JunitHelper.processCoverageReport(xml, className, qaMethod.getMethod().getElementName());
+			addToReport(xml, className, qaMethod, minPercentRate, signature, reports, false);
+		}
+	}
+	
+	private static void addToReport(String xml, String className, QaMethod qaMethod, double minPercentRate, String signature, Map<String, List<ReportMethod>> reports, boolean exists) {
+		double coverage = JunitHelper.processCoverageReport(xml, className, qaMethod.getMethod().getElementName());
+		String source = getSourceSafe(qaMethod.getMethod());
+		ReportMethod reportMethod = new ReportMethod(className, signature);
+		
+		if (coverage < minPercentRate) {
+			LOCResult locResult = LOCCalculator.calculate(source);
+			int mcc = MCCCalculator.calculate(source, locResult.getSourceCode());
+			reportMethod.setMetrics(locResult.getCount(), mcc, coverage);
 			
-			if (coverage < 0.6) {
-				LOCResult locResult = LOCCalculator.calculate(source);
-				int mcc = MCCCalculator.calculate(source, locResult.getSourceCode());
-				reportMethod.setMetrics(locResult.getCount(), mcc, coverage);
+			if (exists) {
+				reports.get(className).add(reportMethod);
+			} else {
 				List<ReportMethod> methods = new ArrayList<>();
 				methods.add(reportMethod);
 				reports.put(className, methods);

@@ -2,3 +2,8 @@
 - Criar enums para os valores estáticos
 - Criar arquivo de i18n para as mensagens e strings
 - Corrigir o bug do junit helper, quando os métodos têm o mesmo nome
+- Arrendondar as horas de cada metodo,e o toal de horas do arquivo de análise
+- Colocar um total de horas por classe
+- Colocar um total de métodos por classe
+- Adicionar um contador de métodos em que não foi encontrado o coverage, por classe, e um total no arquivo
+- Adicionar no início do arquivo as configurações
