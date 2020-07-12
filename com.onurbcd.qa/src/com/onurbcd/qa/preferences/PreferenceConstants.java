@@ -31,4 +31,8 @@ public class PreferenceConstants {
 	public static final String P_JUNIT_COVERAGE_REPORT = "junitCoverageReport";
 
 	public static final String P_MIN_PERCENT_RATE = "minPercentRate";
+	
+	public static final String P_MCC_RATE = "mccRate";
+	
+	public static final String P_LOC_RATE = "locRate";
 }

@@ -24,7 +24,9 @@ public class PreferenceHelper {
 				.init(store.getInt(PreferenceConstants.P_MAX_RECURSION_LEVEL),
 						StringUtils.trim(store.getString(PreferenceConstants.P_REPORT_FILE_PATH)),
 						StringUtils.trim(store.getString(PreferenceConstants.P_JUNIT_COVERAGE_REPORT)),
-						store.getInt(PreferenceConstants.P_MIN_PERCENT_RATE));
+						store.getInt(PreferenceConstants.P_MIN_PERCENT_RATE),
+						store.getInt(PreferenceConstants.P_MCC_RATE),
+						store.getInt(PreferenceConstants.P_LOC_RATE));
 	}
 	
 	public static String validate(QaPreference preferences) {

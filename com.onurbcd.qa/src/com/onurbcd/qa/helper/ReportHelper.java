@@ -17,6 +17,7 @@ import com.onurbcd.qa.metrics.MCCCalculator;
 import com.onurbcd.qa.preferences.QaPreference;
 import com.onurbcd.qa.util.DateTimeUtil;
 import com.onurbcd.qa.util.FileUtil;
+import com.onurbcd.qa.util.NumericUtil;
 import com.onurbcd.qa.util.QaMethod;
 import com.onurbcd.qa.util.ReportMethod;
 
@@ -102,12 +103,13 @@ public class ReportHelper {
 	        reportContent.append(entry.getKey()).append("\n");
 	        
 	        for (ReportMethod reportMethod : entry.getValue()) {
-	        	totalHours += reportMethod.getHours();
+	        	double hours = reportMethod.getHours(prefs.getMccRate(), prefs.getLocRate());
+	        	totalHours += hours;
 	        	reportContent.append("    ").append(reportMethod.getSignature()).append("\n")
 	        	.append("        LOC: ").append(reportMethod.getLoc()).append("\n")
 	        	.append("        MCC: ").append(reportMethod.getMcc()).append("\n")
 	        	.append("        COVERAGE: ").append(reportMethod.getCoverage()).append("\n")
-	        	.append("        HORAS: ").append(reportMethod.getHours()).append("\n");
+	        	.append("        HORAS: ").append(hours).append("\n");
 	        	numberOfMethods++;
 			}
 	        
@@ -118,7 +120,7 @@ public class ReportHelper {
 			return;
 		}
 		
-		String header = "TOTAL HOURS: " + totalHours +  "\nNUMBER OF METHODS: " + numberOfMethods + "\n\n";
+		String header = "TOTAL HOURS: " + NumericUtil.round(totalHours, 2) +  "\nNUMBER OF METHODS: " + numberOfMethods + "\n\n";
 		String fullFileName = prefs.getReportFilePath() + SEPARATOR + REPORT_FILE_NAME + DateTimeUtil.getNowFormatted() + REPORT_FILE_EXTENSION;
 		FileUtil.writeStringToFile(fullFileName, header + reportContent.toString());
 	}

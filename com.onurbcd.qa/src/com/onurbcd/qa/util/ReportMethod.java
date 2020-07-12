@@ -64,8 +64,7 @@ public class ReportMethod {
 		this.coverage = coverage;
 	}
 
-	public double getHours() {
-		// MCC * 0.5 + LOC * 0.25
-		return (mcc * 0.4) + (loc * 0.15);
+	public double getHours(double mccRate, double locRate) {
+		return NumericUtil.round((mcc * mccRate) + (loc * locRate), 2);
 	}
 }

@@ -30,6 +30,12 @@ public class QaPreferencePage extends FieldEditorPreferencePage implements IWork
 		IntegerFieldEditor junitCoverageReport = new IntegerFieldEditor(PreferenceConstants.P_MIN_PERCENT_RATE, "Minimum Percentage Rate:", getFieldEditorParent());
 		junitCoverageReport.setValidRange(1, 100);
 		addField(junitCoverageReport);
+		IntegerFieldEditor mccRate = new IntegerFieldEditor(PreferenceConstants.P_MCC_RATE, "MCC Rate:", getFieldEditorParent());
+		mccRate.setValidRange(0, 100);
+		addField(mccRate);
+		IntegerFieldEditor locRate = new IntegerFieldEditor(PreferenceConstants.P_LOC_RATE, "LOC Rate:", getFieldEditorParent());
+		locRate.setValidRange(0, 100);
+		addField(locRate);
 	}
 
 	public void init(IWorkbench workbench) {

@@ -29,6 +29,10 @@ public class QaPreference {
 	private String junitCoverageReport;
 	
 	private double minPercentRate;
+	
+	private double mccRate;
+	
+	private double locRate;
 
 	public QaPreference(String projectName, String packageName, String unitName, String typeName, String methodSignature, String mainType, String notQaTypes) {
 		super();
@@ -41,11 +45,13 @@ public class QaPreference {
 		this.notQaTypes = StringUtils.isNotBlank(notQaTypes) ? Arrays.asList(StringUtils.splitPreserveAllTokens(notQaTypes, PreferenceConstants.SEPARATOR)) : Collections.emptyList();
 	}
 	
-	public QaPreference init(int maxRecursionLevel, String reportFilePath, String junitCoverageReport, int minPercentRate) {
+	public QaPreference init(int maxRecursionLevel, String reportFilePath, String junitCoverageReport, int minPercentRate, int mccRate, int locRate) {
 		this.maxRecursionLevel = maxRecursionLevel;
 		this.reportFilePath = reportFilePath;
 		this.junitCoverageReport = junitCoverageReport;
 		this.minPercentRate = minPercentRate / 100.0;
+		this.mccRate = mccRate / 100.0;
+		this.locRate = locRate / 100.0;
 		return this;
 	}
 
@@ -135,5 +141,21 @@ public class QaPreference {
 
 	public void setMinPercentRate(double minPercentRate) {
 		this.minPercentRate = minPercentRate;
+	}
+
+	public double getMccRate() {
+		return mccRate;
+	}
+
+	public void setMccRate(double mccRate) {
+		this.mccRate = mccRate;
+	}
+
+	public double getLocRate() {
+		return locRate;
+	}
+
+	public void setLocRate(double locRate) {
+		this.locRate = locRate;
 	}
 }

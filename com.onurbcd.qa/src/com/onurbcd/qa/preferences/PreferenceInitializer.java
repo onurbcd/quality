@@ -21,5 +21,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.P_REPORT_FILE_PATH, StringUtils.EMPTY);
 		store.setDefault(PreferenceConstants.P_JUNIT_COVERAGE_REPORT, StringUtils.EMPTY);
 		store.setDefault(PreferenceConstants.P_MIN_PERCENT_RATE, 1);
+		store.setDefault(PreferenceConstants.P_MCC_RATE, 1);
+		store.setDefault(PreferenceConstants.P_LOC_RATE, 1);
 	}
 }
