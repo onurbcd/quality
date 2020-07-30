@@ -150,4 +150,12 @@ public class MethodHelper {
 
 		return null;
 	}
+	
+	public static boolean isConstructor(IMethod method) {
+		try {
+			return method.isConstructor();
+		} catch (JavaModelException e) {
+			return false;
+		}
+	}
 }

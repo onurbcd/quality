@@ -26,6 +26,8 @@ public class ReportHelper {
 	private static final String REPORT_FILE_NAME = "qa-analysis-report-";
 	
 	private static final String REPORT_FILE_EXTENSION = ".txt";
+	
+	private static final String NOT_FOUND = "NOT FOUND";
 
 	private ReportHelper() {
 	}
@@ -54,6 +56,10 @@ public class ReportHelper {
 	}
 	
 	private static void addReportMethod(Map<String, List<ReportMethod>> reports, QaMethod qaMethod, String xml, double minPercentRate) {
+		if (MethodHelper.isConstructor(qaMethod.getMethod())) {
+			return;
+		}
+		
 		String className = qaMethod.getMethod().getDeclaringType().getFullyQualifiedName();
 		String signature = MethodHelper.getMethodFullName(qaMethod.getMethod());
 		
@@ -67,11 +73,18 @@ public class ReportHelper {
 	}
 	
 	private static void addToReport(String xml, String className, QaMethod qaMethod, double minPercentRate, String signature, Map<String, List<ReportMethod>> reports, boolean exists) {
-		double coverage = JunitHelper.processCoverageReport(xml, className, qaMethod.getMethod().getElementName());
+		Double coverage = null;
+		
+		try {
+			coverage = JunitHelper.processCoverageReport(xml, className, qaMethod.getMethod().getElementName(), qaMethod.getMethod().getSignature());
+		} catch (IllegalArgumentException | JavaModelException e) {
+			coverage = null;
+		}
+
 		String source = getSourceSafe(qaMethod.getMethod());
 		ReportMethod reportMethod = new ReportMethod(className, signature);
-		
-		if (coverage < minPercentRate) {
+
+		if (coverage == null || coverage < minPercentRate) {
 			LOCResult locResult = LOCCalculator.calculate(source);
 			int mcc = MCCCalculator.calculate(source, locResult.getSourceCode());
 			reportMethod.setMetrics(locResult.getCount(), mcc, coverage);
@@ -101,19 +114,21 @@ public class ReportHelper {
 		
 		for (Map.Entry<String, List<ReportMethod>> entry : reports.entrySet()) {
 	        reportContent.append(entry.getKey()).append("\n");
+	        double totalClassHours = 0;
 	        
 	        for (ReportMethod reportMethod : entry.getValue()) {
 	        	double hours = reportMethod.getHours(prefs.getMccRate(), prefs.getLocRate());
 	        	totalHours += hours;
+	        	totalClassHours += hours;
 	        	reportContent.append("    ").append(reportMethod.getSignature()).append("\n")
 	        	.append("        LOC: ").append(reportMethod.getLoc()).append("\n")
 	        	.append("        MCC: ").append(reportMethod.getMcc()).append("\n")
-	        	.append("        COVERAGE: ").append(reportMethod.getCoverage()).append("\n")
+	        	.append("        COVERAGE: ").append(reportMethod.getCoverage() != null ? reportMethod.getCoverage() : NOT_FOUND).append("\n")
 	        	.append("        HORAS: ").append(hours).append("\n");
 	        	numberOfMethods++;
 			}
 	        
-	        reportContent.append("\n");
+	        reportContent.append("TOTAL CLASS HOURS: ").append(NumericUtil.round(totalClassHours, 2)).append("\n\n");
 	    }
 		
 		if (reportContent.length() <= 0) {

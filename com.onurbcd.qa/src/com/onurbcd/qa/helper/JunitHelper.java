@@ -1,118 +1,167 @@
 package com.onurbcd.qa.helper;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.onurbcd.qa.util.NumericUtil;
+import com.onurbcd.qa.util.RegexUtil;
+
 public class JunitHelper {
+
+	private static final char DOT = '.';
 	
-	private static final String DIGITS = "(\\p{Digit}+)";
-    private static final String HEXDIGITS = "(\\p{XDigit}+)";
-    // an exponent is 'e' or 'E' followed by an optionally
-    // signed decimal integer.
-    private static final String EXP = "[eE][+-]?" + DIGITS;
-    private static final String REGEX_NUMERIC_VALUE = ("[\\x00-\\x20]*" + // Optional leading "whitespace"
-            "[+-]?(" + // Optional sign character
-            "NaN|" + // "NaN" string
-            "Infinity|" + // "Infinity" string
-            // A decimal floating-point string representing a finite positive
-            // number without a leading sign has at most five basic pieces:
-            // Digits . Digits ExponentPart FloatTypeSuffix
-            //
-            // Since this method allows integer-only strings as input
-            // in addition to strings of floating-point literals, the
-            // two sub-patterns below are simplifications of the grammar
-            // productions from section 3.10.2 of
-            // The Java™ Language Specification.
-            // Digits ._opt Digits_opt ExponentPart_opt FloatTypeSuffix_opt
-            "(((" + DIGITS + "(\\.)?(" + DIGITS + "?)(" + EXP + ")?)|" +
-            // . Digits ExponentPart_opt FloatTypeSuffix_opt
-            "(\\.(" + DIGITS + ")(" + EXP + ")?)|" +
-            // Hexadecimal strings
-            "((" +
-            // 0[xX] HexDigits ._opt BinaryExponent FloatTypeSuffix_opt
-            "(0[xX]" + HEXDIGITS + "(\\.)?)|" +
-            // 0[xX] HexDigits_opt . HexDigits BinaryExponent FloatTypeSuffix_opt
-            "(0[xX]" + HEXDIGITS + "?(\\.)" + HEXDIGITS + ")" + ")[pP][+-]?" + DIGITS + "))" + "[fFdD]?))"
-            + "[\\x00-\\x20]*");// Optional trailing "whitespace"
-    
-    private static final String REGEX_MISSED = "missed=\"";
+	private static final char SLASH = '/';
+
+	private static final String INSTRUCTION = "INSTRUCTION";
+	
+	private static final String END_TAG = "/>";
+
+	private static final String REGEX_MISSED = "missed=\"";
     
     private static final String REGEX_COVERED = "covered=\"";
+    
+    private static final String TAG_METHOD_CLOSE = "</method>";
 
 	private JunitHelper() {
 	}
 
-	public static double processCoverageReport(String xml, String className, String method) {
-		if (StringUtils.isBlank(xml) || StringUtils.isBlank(className) || StringUtils.isBlank(method)) {
-			return 0d;
+	public static Double processCoverageReport(String xml, String className, String method, String signature) {
+		if (StringUtils.isBlank(xml) || StringUtils.isBlank(className) || StringUtils.isBlank(method) || StringUtils.isBlank(signature)) {
+			return null;
 		}
 
-		String findClassName = className.replace('.', '/');
-		int indexOfClass = xml.indexOf(findClassName);
-
-		if (indexOfClass == -1) {
-			return 0d;
-		}
-
-		int indexOfMethod = xml.indexOf(method, indexOfClass);
-
-		if (indexOfMethod == -1) {
-			return 0d;
+		String findClassName = className.replace(DOT, SLASH);
+		String choosenMethod = findMethod(xml, findClassName, method, signature);
+		
+		if (StringUtils.isBlank(choosenMethod)) {
+			return null;
 		}
 		
-		int indexOfInstruction = xml.indexOf("INSTRUCTION", indexOfMethod);
-		
-		if (indexOfInstruction == -1) {
-			return 0d;
-		}
-		
-		int indexOfCloseCounter = xml.indexOf("/>", indexOfInstruction);
-		
-		if (indexOfCloseCounter == -1) {
-			return 0d;
-		}
-		
-		String xmlInstructionCounter = xml.substring(indexOfInstruction, indexOfCloseCounter);
+		String xmlInstructionCounter = findInstruction(choosenMethod);
 		
 		if (StringUtils.isBlank(xmlInstructionCounter)) {
-			return 0d;
+			return null;
 		}
 		
-		double missed = getNumericValue(REGEX_MISSED + REGEX_NUMERIC_VALUE, xmlInstructionCounter, REGEX_MISSED);
-		double covered = getNumericValue(REGEX_COVERED + REGEX_NUMERIC_VALUE, xmlInstructionCounter, REGEX_COVERED);
+		Double missed = RegexUtil.getNumericValue(REGEX_MISSED + NumericUtil.REGEX_NUMERIC_VALUE, xmlInstructionCounter, REGEX_MISSED);
+		Double covered = RegexUtil.getNumericValue(REGEX_COVERED + NumericUtil.REGEX_NUMERIC_VALUE, xmlInstructionCounter, REGEX_COVERED);
+		
+		if (missed == null || covered == null) {
+			return null;
+		}
+		
 		double total = missed + covered;
 		return total == 0d ? 0d : (covered / total);
 	}
 	
-	private static double getNumericValue(String regex, String input, String regexReplace) {
-        String value = find(regex, input);
+	private static String findMethod(String xml, String className, String method, String signature) {
+		String classRegex = "<class name=\"" + className + "\".*</class>";
+		String classContent = RegexUtil.find(classRegex, xml);
+		
+		if (StringUtils.isBlank(classContent)) {
+			return null;
+		}
 
-        if (value == null) {
-            return 0d;
-        }
-
-    	value = value.replaceAll(regexReplace, StringUtils.EMPTY);
-    	Double convertedValue = stringValueToDouble(value); 
-        return convertedValue != null ? convertedValue : 0d;
-    }
+		List<String> methods = findMultipleMethods(classContent, method);
+		
+		if (methods.isEmpty()) {
+			return null;
+		}
+		
+		if (methods.size() == 1) {
+			return methods.get(0);
+		}
+		
+		return chooseMethod(methods, signature);
+	}
 	
-	private static String find(String regex, CharSequence input) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(input);
-        return matcher.find() ? matcher.group().trim() : null;
-    }
+	private static List<String> findMultipleMethods(String classContent, String method) {
+		String methodRegex = "<method name=\"" + method + "\"";
+		int methodIndex = 0;
+		List<String> methods = new ArrayList<>();
+		
+		do {
+			methodIndex = classContent.indexOf(methodRegex, methodIndex);
+			
+			if (methodIndex != -1) {
+				int closeTagIndex = classContent.indexOf(TAG_METHOD_CLOSE, methodIndex);
+				
+				if (closeTagIndex != -1) {
+					String methodContent = classContent.substring(methodIndex, closeTagIndex + TAG_METHOD_CLOSE.length());
+					
+					if (StringUtils.isNotBlank(methodContent)) {
+						methods.add(methodContent);
+					}
+					
+					methodIndex = closeTagIndex + TAG_METHOD_CLOSE.length();
+				} else {
+					methodIndex = -1;
+				}
+			}
+		} while (methodIndex != -1);
+		
+		return methods;
+	}
 	
-	private static Double stringValueToDouble(String strValue) {
-        Double value = null;
+	private static String chooseMethod(List<String> methods, String signature) {
+		List<String> signatureParams = SignatureHelper.getParams(signature, false);
+		
+		if (signatureParams == null) {
+			return null;
+		}
+		
+		for (String method : methods) {
+			String descRegex = "desc=\".*\" line";
+			String desc = RegexUtil.find(descRegex, method);
+			desc = desc.replace("desc=", StringUtils.EMPTY).replace("\"", StringUtils.EMPTY).replace(" line", StringUtils.EMPTY);
+			
+			if (StringUtils.isBlank(desc)) {
+				continue;
+			}
 
-        try {
-        	value = new Double(strValue);
-        } catch (NumberFormatException | NullPointerException ex) {
-            return null;
-        }
+			List<String> descParams = SignatureHelper.getParams(desc, true);
+			
+			if (compareParams(signatureParams, descParams)) {
+				return method;
+			}
+		}
 
-        return value;
-    }
+		return null;
+	}
+	
+	private static boolean compareParams(List<String> signatureParams, List<String> descParams) {
+		if (descParams == null || signatureParams.size() != descParams.size()) {
+			return false;
+		}
+		
+		if (signatureParams.isEmpty() && descParams.isEmpty()) {
+			return true;
+		}
+		
+		for (int i = 0; i < signatureParams.size(); i++) {
+			if (!signatureParams.get(i).equals(descParams.get(i))) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	private static String findInstruction(String method) {
+		int indexOfInstruction =  method.indexOf(INSTRUCTION);
+		
+		if (indexOfInstruction == -1) {
+			return null;
+		}
+		
+		int indexOfCloseCounter = method.indexOf(END_TAG, indexOfInstruction);
+		
+		if (indexOfCloseCounter == -1) {
+			return null;
+		}
+		
+		return method.substring(indexOfInstruction, indexOfCloseCounter);
+	}
 }

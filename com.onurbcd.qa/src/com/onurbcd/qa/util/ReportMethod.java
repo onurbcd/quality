@@ -10,7 +10,7 @@ public class ReportMethod {
 	
 	private int mcc;
 	
-	private double coverage;
+	private Double coverage;
 
 	public ReportMethod(String className, String signature) {
 		super();
@@ -18,7 +18,7 @@ public class ReportMethod {
 		this.signature = signature;
 	}
 	
-	public void setMetrics(int loc, int mcc, double coverage) {
+	public void setMetrics(int loc, int mcc, Double coverage) {
 		this.loc = loc;
 		this.mcc = mcc;
 		this.coverage = coverage;
@@ -56,11 +56,11 @@ public class ReportMethod {
 		this.mcc = mcc;
 	}
 	
-	public double getCoverage() {
-		return coverage;
+	public Double getCoverage() {
+		return coverage != null ? NumericUtil.round(coverage, 2) : null;
 	}
 
-	public void setCoverage(double coverage) {
+	public void setCoverage(Double coverage) {
 		this.coverage = coverage;
 	}
 
