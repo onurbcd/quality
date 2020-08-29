@@ -65,6 +65,7 @@ public class ReportMethod {
 	}
 
 	public double getHours(double mccRate, double locRate) {
-		return NumericUtil.round((mcc * mccRate) + (loc * locRate), 2);
+		double hours = NumericUtil.round((mcc * mccRate) + (loc * locRate), 0); 
+		return hours > 0 ? hours : 1;
 	}
 }

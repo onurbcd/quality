@@ -132,14 +132,14 @@ public class ReportHelper {
 	        	numberOfMethods++;
 			}
 	        
-	        reportContent.append("TOTAL CLASS HOURS: ").append(NumericUtil.round(totalClassHours, 2)).append("\n\n");
+	        reportContent.append("TOTAL CLASS HOURS: ").append(NumericUtil.round(totalClassHours, 0)).append("\n\n");
 	    }
 		
 		if (reportContent.length() <= 0) {
 			return;
 		}
 		
-		String header = "TOTAL HOURS: " + NumericUtil.round(totalHours, 2) +  "\nNUMBER OF METHODS: " + numberOfMethods + "\n\n";
+		String header = "TOTAL HOURS: " + NumericUtil.round(totalHours, 0) +  "\nNUMBER OF METHODS: " + numberOfMethods + "\n\n";
 		String fullFileName = prefs.getReportFilePath() + SEPARATOR + REPORT_FILE_NAME + DateTimeUtil.getNowFormatted() + REPORT_FILE_EXTENSION;
 		FileUtil.writeStringToFile(fullFileName, header + reportContent.toString());
 	}
