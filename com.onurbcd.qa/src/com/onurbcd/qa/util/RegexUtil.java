@@ -3,14 +3,14 @@ package com.onurbcd.qa.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class RegexUtil {
 
 	private RegexUtil() {
 	}
 	
-	public static String find(String regex, CharSequence input) {
+	public static String find(String regex, String input) {
 		if (StringUtils.isBlank(regex) || StringUtils.isBlank(input)) {
 			return null;
 		}

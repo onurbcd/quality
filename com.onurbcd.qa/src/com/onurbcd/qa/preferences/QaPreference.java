@@ -1,10 +1,8 @@
 package com.onurbcd.qa.preferences;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import com.onurbcd.qa.util.StringUtil;
 
 public class QaPreference {
 
@@ -16,7 +14,7 @@ public class QaPreference {
 	
 	private String typeName;
 	
-	private String methodSignature;
+	private List<String> methodSignature;
 	
 	private String mainType;
 
@@ -40,9 +38,9 @@ public class QaPreference {
 		this.packageName = packageName;
 		this.unitName = unitName;
 		this.typeName = typeName;
-		this.methodSignature = methodSignature;
+		this.methodSignature = StringUtil.stringToList(methodSignature);
 		this.mainType = mainType;
-		this.notQaTypes = StringUtils.isNotBlank(notQaTypes) ? Arrays.asList(StringUtils.splitPreserveAllTokens(notQaTypes, PreferenceConstants.SEPARATOR)) : Collections.emptyList();
+		this.notQaTypes = StringUtil.stringToList(notQaTypes);
 	}
 	
 	public QaPreference init(int maxRecursionLevel, String reportFilePath, String junitCoverageReport, int minPercentRate, int mccRate, int locRate) {
@@ -87,11 +85,11 @@ public class QaPreference {
 		this.typeName = typeName;
 	}
 
-	public String getMethodSignature() {
+	public List<String> getMethodSignature() {
 		return methodSignature;
 	}
 
-	public void setMethodSignature(String methodSignature) {
+	public void setMethodSignature(List<String> methodSignature) {
 		this.methodSignature = methodSignature;
 	}
 

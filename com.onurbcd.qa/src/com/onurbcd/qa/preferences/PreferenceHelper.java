@@ -1,6 +1,6 @@
 package com.onurbcd.qa.preferences;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.onurbcd.qa.Activator;
@@ -39,7 +39,7 @@ public class PreferenceHelper {
 		sb.append(StringUtils.isBlank(preferences.getPackageName()) ? "Package Name is required" : StringUtils.EMPTY);
 		sb.append(StringUtils.isBlank(preferences.getUnitName()) ? "Unit Name is required" : StringUtils.EMPTY);
 		sb.append(StringUtils.isBlank(preferences.getTypeName()) ? "Type Name is required" : StringUtils.EMPTY);
-		sb.append(StringUtils.isBlank(preferences.getMethodSignature()) ? "Method Signature is required" : StringUtils.EMPTY);
+		sb.append(preferences.getMethodSignature() == null || preferences.getMethodSignature().isEmpty() ? "Method Signature is required" : StringUtils.EMPTY);
 		sb.append(StringUtils.isBlank(preferences.getMainType()) ? "Main Type is required" : StringUtils.EMPTY);
 		sb.append(StringUtils.isBlank(preferences.getReportFilePath()) ? "Report File Path is required" : StringUtils.EMPTY);
 		sb.append(StringUtils.isBlank(preferences.getJunitCoverageReport()) ? "Junit Coverage Report is required" : StringUtils.EMPTY);

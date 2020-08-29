@@ -6,6 +6,8 @@ import org.eclipse.ui.IWorkbench;
 
 import com.onurbcd.qa.Activator;
 
+import static com.onurbcd.qa.preferences.PreferenceConstants.*;
+
 public class QaPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
 	public QaPreferencePage() {
@@ -19,9 +21,9 @@ public class QaPreferencePage extends FieldEditorPreferencePage implements IWork
 		addField(new StringFieldEditor(PreferenceConstants.P_PACKAGE_NAME, "Package Name:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.P_UNIT_NAME, "Unit Name:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.P_TYPE_NAME, "Type Name:", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceConstants.P_METHOD_SIGNATURE, "Method Signature:", getFieldEditorParent()));
+		addField(new QaListEditor(PreferenceConstants.P_METHOD_SIGNATURE, "Method Signature:", getFieldEditorParent(), METHOD_SIGNATURE_DIALOG_TITLE, METHOD_SIGNATURE_DIALOG_MESSAGE));
 		addField(new StringFieldEditor(PreferenceConstants.P_MAIN_TYPE, "Main Type:", getFieldEditorParent()));
-		addField(new QaListEditor(PreferenceConstants.P_NOT_QA_TYPES, "Not QA Types:", getFieldEditorParent()));
+		addField(new QaListEditor(PreferenceConstants.P_NOT_QA_TYPES, "Not QA Types:", getFieldEditorParent(), NOT_QA_TYPES_DIALOG_TITLE, NOT_QA_TYPES_DIALOG_MESSAGE));
 		IntegerFieldEditor maxRecursionLevel = new IntegerFieldEditor(PreferenceConstants.P_MAX_RECURSION_LEVEL, "Max Recursion Level", getFieldEditorParent());
 		maxRecursionLevel.setValidRange(0, 99);
 		addField(maxRecursionLevel);

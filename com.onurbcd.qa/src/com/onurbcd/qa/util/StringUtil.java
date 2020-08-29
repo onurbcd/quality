@@ -4,7 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.onurbcd.qa.preferences.PreferenceConstants;
 
 public class StringUtil {
 
@@ -44,5 +51,9 @@ public class StringUtil {
 
 	    bufferedReader.close();
 	    return sb.toString();
+	}
+	
+	public static List<String> stringToList(String str) {
+		return StringUtils.isNotBlank(str) ? Arrays.asList(StringUtils.splitPreserveAllTokens(str, PreferenceConstants.SEPARATOR)) : Collections.emptyList();
 	}
 }

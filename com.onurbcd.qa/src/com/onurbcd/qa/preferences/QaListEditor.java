@@ -2,7 +2,7 @@ package com.onurbcd.qa.preferences;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.ListEditor;
 import org.eclipse.jface.window.Window;
@@ -13,16 +13,18 @@ import com.google.common.base.Splitter;
 
 public class QaListEditor extends ListEditor {
 	
-	private static final String DIALOG_TITLE = "Not QA Type";
+	private String dialogTitle;
 	
-	private static final String DIALOG_MESSAGE = "Enter a package name or class type not be be included in the analysis";
+	private String dialogMessage;
 	
 	protected QaListEditor() {
 	}
 
-	public QaListEditor(String name, String labelText, Composite parent) {
+	public QaListEditor(String name, String labelText, Composite parent, String dialogTitle, String dialogMessage) {
         init(name, labelText);
         createControl(parent);
+        this.dialogTitle = dialogTitle;
+        this.dialogMessage = dialogMessage;
     }
 
 	@Override
@@ -32,19 +34,19 @@ public class QaListEditor extends ListEditor {
 
 	@Override
 	protected String getNewInputObject() {
-		final InputDialog inputDialog = new InputDialog(getShell(), DIALOG_TITLE, DIALOG_MESSAGE, StringUtils.EMPTY, null);
+		final InputDialog inputDialog = new InputDialog(getShell(), dialogTitle, dialogMessage, StringUtils.EMPTY, null);
 		
 		if (inputDialog.open() != Window.OK) {
             return null;
         }
 		
-		final String notQaType = inputDialog.getValue();
+		final String value = inputDialog.getValue();
 
-        if (StringUtils.isBlank(notQaType)) {
+        if (StringUtils.isBlank(value)) {
             return null;
         }
 
-        return StringUtils.trim(notQaType);
+        return StringUtils.trim(value);
 	}
 
 	@Override

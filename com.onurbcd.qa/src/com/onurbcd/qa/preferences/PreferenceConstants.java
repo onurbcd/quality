@@ -8,7 +8,7 @@ public class PreferenceConstants {
 	private PreferenceConstants() {
 	}
 
-	public static final char SEPARATOR = ',';
+	public static final char SEPARATOR = ';';
 
 	public static final String P_PROJECT_NAME = "projectName";
 
@@ -35,4 +35,12 @@ public class PreferenceConstants {
 	public static final String P_MCC_RATE = "mccRate";
 	
 	public static final String P_LOC_RATE = "locRate";
+	
+	public static final String NOT_QA_TYPES_DIALOG_TITLE = "Not QA Type";
+	
+	public static final String NOT_QA_TYPES_DIALOG_MESSAGE = "Enter a package name or class type not be be included in the analysis";
+	
+	public static final String METHOD_SIGNATURE_DIALOG_TITLE = "Method Signature";
+	
+	public static final String METHOD_SIGNATURE_DIALOG_MESSAGE = "Enter a method signature (all must be from the same class)";
 }

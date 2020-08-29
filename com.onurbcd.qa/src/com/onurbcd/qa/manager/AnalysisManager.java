@@ -2,8 +2,10 @@ package com.onurbcd.qa.manager;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
@@ -39,9 +41,9 @@ public class AnalysisManager {
 
 	private IType type;
 
-	private IMethod method;
+	private List<IMethod> methods;
 
-	private QaMethod qaMethod;
+	private List<QaMethod> qaMethods;
 
 	private QaPreference prefs;
 	
@@ -55,7 +57,7 @@ public class AnalysisManager {
 		setMessages(DateTimeUtil.getNowFormatted());
 		initPreferences();
 		process();
-		ReportHelper.processReport(qaMethod, prefs);
+		ReportHelper.processReport(qaMethods, prefs);
 		Instant finish = Instant.now();
 		long timeElapsed = Duration.between(start, finish).getSeconds();
 		setMessages("DURATION IN SECONDS: ", String.valueOf(timeElapsed));
@@ -73,8 +75,8 @@ public class AnalysisManager {
 		packageFragment = null;
 		compilationUnit = null;
 		type = null;
-		method = null;
-		qaMethod = null;
+		methods = new ArrayList<>();
+		qaMethods = new ArrayList<>();
 		invalid = false;
 	}
 	
@@ -150,22 +152,26 @@ public class AnalysisManager {
 			return;
 		}
 
-		method = MethodHelper.getMethod(type, prefs.getMethodSignature());
+		for (String methodSignature : prefs.getMethodSignature()) {
+			methods.add(MethodHelper.getMethod(type, methodSignature));
+		}
 
-		if (method == null) {
-			setMessages("Method '", prefs.getMethodSignature(), WAS_NOT_FOUND);
+		if (methods.isEmpty()) {
+			setMessages("Method signature not found");
 		}
 	}
 
 	private void handleCalles() {
-		if (method == null) {
+		if (methods.isEmpty()) {
 			return;
 		}
 
-		qaMethod = MethodHelper.getCalleesOf(method, null, 1, prefs.getMainType(), prefs.getNotQaTypes(), prefs.getMaxRecursionLevel());
+		for (IMethod method : methods) {
+			qaMethods.add(MethodHelper.getCalleesOf(method, null, 1, prefs.getMainType(), prefs.getNotQaTypes(), prefs.getMaxRecursionLevel()));
+		}
 
-		if (qaMethod == null || qaMethod.getCallees().isEmpty()) {
-			setMessages("Method '", prefs.getMethodSignature(), "' does not have callees.");
+		if (qaMethods.isEmpty() || qaMethods.stream().allMatch(p -> p.getCallees().isEmpty())) {
+			setMessages("Method signature does not have callees.");
 		}
 	}
 

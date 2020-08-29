@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 
@@ -32,14 +32,18 @@ public class ReportHelper {
 	private ReportHelper() {
 	}
 	
-	public static void processReport(QaMethod qaMethod, QaPreference prefs) {
-		if (qaMethod == null || prefs == null || StringUtils.isBlank(prefs.getReportFilePath())) {
+	public static void processReport(List<QaMethod> qaMethods, QaPreference prefs) {
+		if (qaMethods.isEmpty() || prefs == null || StringUtils.isBlank(prefs.getReportFilePath())) {
 			return;
 		}
 
 		Map<String, List<ReportMethod>> reports = new LinkedHashMap<>();
 		String xml = FileUtil.getJunitCoverageReport(prefs.getJunitCoverageReport());
-		processQaMethod(reports, qaMethod, xml, prefs.getMinPercentRate());
+		
+		for (QaMethod qaMethod : qaMethods) {
+			processQaMethod(reports, qaMethod, xml, prefs.getMinPercentRate());
+		}
+
 		generateReport(reports, prefs);
 	}
 

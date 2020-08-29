@@ -8,7 +8,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class FileUtil {
 
@@ -40,9 +40,7 @@ public class FileUtil {
 			File file = new File(strFile);
 			return StringUtil.inputStreamToString(new FileInputStream(file));
 		} catch (NullPointerException | IOException e) {
-			e.printStackTrace();
+			return StringUtils.EMPTY;
 		}
-		
-		return StringUtils.EMPTY;
 	}
 }

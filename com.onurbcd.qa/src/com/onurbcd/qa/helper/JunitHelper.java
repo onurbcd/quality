@@ -3,7 +3,7 @@ package com.onurbcd.qa.helper;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.onurbcd.qa.util.NumericUtil;
 import com.onurbcd.qa.util.RegexUtil;
