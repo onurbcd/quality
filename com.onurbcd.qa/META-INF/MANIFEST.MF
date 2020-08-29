@@ -14,4 +14,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: com.onurbcd.qa
 Bundle-ActivationPolicy: lazy
 Import-Package: com.google.common.base,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ org.junit.jupiter.api;version="5.6.0",
+ org.junit.jupiter.engine;version="5.6.0"
